@@ -1,0 +1,105 @@
+.card-container-full {
+  /* Dành riêng cho BanManager */
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin: 20px;
+}
+
+.ban-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border-left: 5px solid #3498db;
+}
+
+.form-style {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.form-style input,
+.form-style select {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  outline: none;
+}
+
+.btn-save {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.btn-save:hover {
+  background-color: #27ae60;
+}
+
+.btn-cancel {
+  background-color: #e67e22;
+  color: white;
+}
+
+.btn-edit {
+  background-color: #3498db;
+  color: white;
+  margin-right: 8px;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+  color: white;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+table {
+  width: 100%;
+  background: white;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+th,
+td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background-color: #3498db;
+  color: white;
+}
+
+tr:hover {
+  background-color: #f9f9f9;
+}
+
+.status-ready {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.status-busy {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.status-maintenance {
+  color: #f1c40f;
+  font-weight: bold;
+}

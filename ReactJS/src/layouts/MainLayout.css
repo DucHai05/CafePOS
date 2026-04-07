@@ -1,0 +1,227 @@
+/* MainLayout.css - HAI POS Modern Dashboard System */
+
+:root {
+  /* Bảng màu Slate chuyên nghiệp */
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --sidebar-bg: #1e293b; /* Slate 800 */
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  --bg-app: #f8fafc;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --surface: #ffffff;
+  --border: #e2e8f0;
+
+  /* Hệ thống Shadow đa lớp */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  
+  /* Font chuẩn Tiếng Việt */
+  --font-family: 'Be Vietnam Pro', 'Inter', system-ui, sans-serif;
+}
+
+* { 
+  box-sizing: border-box; 
+  margin: 0; 
+  padding: 0; 
+  -webkit-font-smoothing: antialiased;
+}
+
+.pos-app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: var(--font-family);
+  color: var(--text-main);
+  background-color: var(--bg-app);
+}
+
+/* --- SIDEBAR STYLE (Dark Mode chuyên sâu) --- */
+.pos-sidebar {
+  width: 260px;
+  background-color: var(--sidebar-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 32px 20px;
+  color: #94a3b8;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+  color: white;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.logo-box {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--primary), #38bdf8);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  color: white;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.nav-group { margin-bottom: 32px; }
+
+.nav-group label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  display: block;
+  padding-left: 12px;
+  color: #475569; /* Slate 500 */
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: #94a3b8;
+  border-radius: 12px;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-item:hover {
+  background: var(--sidebar-hover);
+  color: white;
+  transform: translateX(4px);
+}
+
+.nav-item.active {
+  background: var(--primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+}
+
+.sidebar-footer { 
+  margin-top: auto; 
+  border-top: 1px solid rgba(255,255,255,0.05); 
+  padding-top: 24px; 
+}
+
+.user-profile { 
+  display: flex; 
+  align-items: center;
+  gap: 12px; 
+  margin-bottom: 24px; 
+}
+
+.user-name { color: white; font-size: 0.95rem; font-weight: 600; }
+.user-role { font-size: 0.75rem; color: #64748b; }
+
+.logout-btn {
+  width: 100%;
+  padding: 12px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* --- MAIN CONTENT AREA STYLE --- */
+.pos-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-app);
+}
+
+.pos-topbar {
+  height: 60px; /* Giảm từ 72px xuống 60px cho gọn */
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px; /* Giảm bớt padding ngang */
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.pos-content {
+  flex: 1;
+  /* GIẢM PADDING: Trên/Dưới 16px - Trái/Phải 24px */
+  padding: 16px 24px; 
+  overflow-y: auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+
+
+.topbar-actions { display: flex; align-items: center; gap: 28px; }
+
+.status-indicator { 
+  font-size: 0.85rem; 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.dot.online { 
+  width: 8px; 
+  height: 8px; 
+  background: #10b981; 
+  border-radius: 50%; 
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.icon-btn:hover { color: var(--primary); }
+
+.time-display {
+  font-weight: 700;
+  color: var(--slate-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.pos-content {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

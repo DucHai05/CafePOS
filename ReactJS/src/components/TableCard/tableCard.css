@@ -1,0 +1,60 @@
+.table-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.table-card {
+    height: 150px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border: 2px solid transparent;
+}
+
+/* Hiệu ứng khi di chuột qua */
+.table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.empty {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border: 2px dashed #dee2e6;
+}
+
+.occupied {
+    background-color: #fff5f5;
+    color: #e03131;
+    border: 2px solid #ffc9c9;
+}
+
+.table-icon { font-size: 2rem; }
+.table-number { font-weight: bold; font-size: 1.2rem; margin: 5px 0; }
+.table-status { font-size: 0.8rem; text-transform: uppercase; }
+
+/* Hiệu ứng vòng tròn đập nhẹ cho bàn đang có khách */
+.pulse-animation {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 10px;
+    height: 10px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 0, 0, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 0, 0, 0); }
+}

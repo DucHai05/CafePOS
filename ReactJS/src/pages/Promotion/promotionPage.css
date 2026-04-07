@@ -1,0 +1,342 @@
+/* PromotionPage.css */
+
+:root {
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-500: #64748b;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.promo-container {
+  /* Biến toàn bộ vùng nội dung thành một khối trắng sang trọng */
+  background: white; 
+  border: 1px solid var(--slate-200); /* Viền mỏng tinh tế */
+  border-radius: 24px; /* Bo góc lớn đồng bộ với Menu/Cart */
+  
+  /* Khoảng cách bên trong khối trắng */
+  padding: 32px; 
+  
+  /* Căn giữa và giới hạn độ rộng để không bị loãng trên màn hình lớn */
+  max-width: 1200px;
+  margin: 10px auto 30px; /* Cách Topbar một chút cho thoáng */
+  
+  box-sizing: border-box;
+  box-shadow: var(--shadow-md); /* Đổ bóng để nổi lên trên nền app */
+  animation: fadeIn 0.4s ease-out;
+}
+
+/* Tinh chỉnh lại Header bên trong khối trắng */
+.promo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  /* Thêm một chút padding nếu Hải muốn tiêu đề lùi vào trong hơn */
+}
+
+/* Nếu Hải muốn viền NÉT ĐỨT (Dashed) cho đúng "gu" thẻ bàn trống */
+/* Hãy bỏ comment dòng dưới đây: */
+/* .promo-container { border: 2px dashed var(--slate-200); } */
+
+.promo-content {
+  /* Đảm bảo nội dung bên trong (Table/Grid) không bị dính sát mép Card trắng */
+  margin-top: 20px;
+}
+
+.promo-header h1 {
+  font-size: 2rem;
+  color: var(--slate-900);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  color: var(--slate-500);
+  font-size: 0.95rem;
+}
+
+.add-promo-btn {
+  background: var(--slate-900);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+}
+
+.add-promo-btn:hover {
+  background: var(--slate-800);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* TABS DẠNG SEGMENTED CONTROL (Cực kỳ hiện đại) */
+.promo-tabs {
+  display: inline-flex;
+  background: var(--slate-100);
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 32px;
+  border: 1px solid var(--slate-200);
+}
+
+.promo-tabs button {
+  background: none;
+  border: none;
+  padding: 10px 24px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--slate-500);
+  border-radius: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9rem;
+}
+
+.promo-tabs button.active {
+  background: white;
+  color: var(--slate-900);
+  box-shadow: var(--shadow-sm);
+}
+
+/* GRID SỰ KIỆN */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.event-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid var(--slate-100);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--slate-200);
+}
+
+.event-card.active {
+  background: linear-gradient(to bottom right, #ffffff, #f0f9ff);
+  border-color: var(--primary);
+}
+
+/* Icon Box với hiệu ứng mờ nhẹ */
+.event-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  flex-shrink: 0;
+  box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1);
+}
+
+.event-info h3 {
+  font-size: 1.1rem;
+  color: var(--slate-900);
+  margin-bottom: 6px;
+}
+
+.event-info p {
+  font-size: 0.85rem;
+  color: var(--slate-500);
+}
+
+.event-info strong {
+  color: var(--primary);
+  font-size: 1rem;
+}
+
+/* TOGGLE SWITCH SLEEK */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.switch input { opacity: 0; width: 0; height: 0; }
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--slate-200);
+  transition: .3s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+}
+
+input:checked + .slider {
+  background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* TABLE MODERN STYLE */
+.promo-table {
+  width: 100%;
+  border-spacing: 0 8px; /* Tạo khoảng cách giữa các hàng */
+  border-collapse: separate;
+}
+
+.promo-table th {
+  padding: 12px 20px;
+  text-align: left;
+  color: var(--slate-500);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.promo-table td {
+  padding: 20px;
+  background: white;
+  border-top: 1px solid var(--slate-100);
+  border-bottom: 1px solid var(--slate-100);
+}
+
+/* Bo góc cho hàng đầu và cuối của mỗi row */
+.promo-table td:first-child { border-left: 1px solid var(--slate-100); border-radius: 16px 0 0 16px; }
+.promo-table td:last-child { border-right: 1px solid var(--slate-100); border-radius: 0 16px 16px 0; }
+
+.percent-tag {
+  background: #f0fdf4;
+  color: var(--success);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border: 1px solid #dcfce7;
+}
+
+.edit-btn {
+  background: var(--slate-100);
+  color: var(--slate-800);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.edit-btn:hover {
+  background: var(--slate-200);
+}
+/* --- MODAL CRUD STYLE --- */
+.promo-modal-crud {
+    background: white;
+    width: 550px;
+    border-radius: 24px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    animation: modalSlideUp 0.3s ease;
+}
+
+.modal-header-crud {
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--slate-100);
+}
+
+.modal-header-crud h2 { margin: 0; font-size: 1.3rem; color: var(--slate-900); }
+.close-x { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--slate-400); }
+
+.modal-body-crud { padding: 24px; }
+
+.form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-weight: 600; font-size: 0.9rem; color: var(--slate-600); }
+.form-group input, .form-group select, .form-group textarea {
+    padding: 12px;
+    border: 2px solid var(--slate-100);
+    border-radius: 12px;
+    font-size: 1rem;
+    outline: none;
+    transition: 0.2s;
+}
+.form-group input:focus { border-color: var(--primary); }
+
+.form-row-crud { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.modal-footer-crud {
+    padding: 20px 24px;
+    background: var(--slate-50);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+}
+
+.btn-primary-save {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: white;
+    border: 1px solid var(--slate-200);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Nút xóa trong card và bảng */
+.text-btn.delete, .text-btn.edit { color: var(--danger); background: none; border: none; cursor: pointer; font-weight: 600; margin-left: 10px;}
+.del-btn-table { background: #fee2e2; color: var(--danger); border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; margin-left: 8px;}
+.card-actions { margin-top: 10px; border-top: 2px dashed var(--slate-100); padding-top: 8px; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

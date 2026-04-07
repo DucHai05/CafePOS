@@ -1,0 +1,28 @@
+.category-scroll {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.category-scroll::-webkit-scrollbar { display: none; }
+
+.category-item {
+  padding: 10px 20px;
+  background: white;
+  border: 2px dashed var(--slate-200);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--slate-500);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.2s;
+}
+
+.category-item.active {
+  background: var(--primary);
+  border: 2px solid var(--primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}

@@ -1,0 +1,131 @@
+/* Lớp nền mờ bao phủ toàn màn hình */
+:root {
+  --primary: #0ea5e9;
+  --primary-light: #f0f9ff;
+  --orange: #f97316;
+  --danger: #ef4444;
+  --success: #10b981;
+  --purple: #8b5cf6;
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-900: #0f172a;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Làm tối nền */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Luôn nằm trên cùng */
+    backdrop-filter: blur(3px); /* Làm mờ nền phía sau cho ảo diệu */
+}
+
+/* Khung nội dung chính */
+.note-modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 16px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease-out; /* Hiệu ứng hiện ra từ dưới lên */
+}
+
+.note-modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #2d3436;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #f1f2f6;
+    padding-bottom: 10px;
+}
+
+/* Danh sách các gợi ý nhanh (Quick Notes) */
+.quick-notes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.quick-notes button {
+    background-color: #f1f2f6;
+    border: 1px solid #dfe4ea;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #57606f;
+    transition: all 0.2s;
+}
+
+.quick-notes button:hover {
+    background-color: #e8f0fe;
+    border-color: #1e90ff;
+    color: #1e90ff;
+}
+
+/* Ô nhập liệu textarea */
+.note-modal-content textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    resize: none; /* Không cho kéo to nhỏ lung tung */
+    font-family: inherit;
+    font-size: 1rem;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+.note-modal-content textarea:focus {
+    border-color: #1e90ff;
+    box-shadow: 0 0 0 3px rgba(30, 144, 255, 0.1);
+}
+
+/* Các nút hành động bên dưới */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-cancel {
+    background-color: #f1f2f6;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: #57606f;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-confirm {
+    background-color: #1e90ff; /* Màu xanh đặc trưng */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-confirm:hover {
+    background-color: #0984e3;
+}
+
+/* Hiệu ứng mượt mà khi mở modal */
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

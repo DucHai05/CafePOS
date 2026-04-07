@@ -1,0 +1,44 @@
+.dropdown-menu {
+    position: absolute;
+    top: 50px; /* Điều chỉnh tùy theo vị trí nút bấm của Hải */
+    right: 10px;
+    background-color: white;
+    min-width: 160px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    border-radius: 12px;
+    padding: 8px 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #eee;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dropdown-menu button {
+    background: none;
+    border: none;
+    padding: 12px 20px;
+    text-align: left;
+    font-size: 0.95rem;
+    color: #444;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dropdown-menu button:hover {
+    background-color: #f8f9fa;
+    color: #1e90ff;
+}
+
+/* Kẻ sọc ngăn cách nếu muốn */
+.dropdown-menu button:not(:last-child) {
+    border-bottom: 1px solid #f1f1f1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

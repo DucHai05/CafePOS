@@ -1,0 +1,33 @@
+.item-action {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.text-red {
+    color: #e74c3c; /* Màu đỏ cho HỦY */
+}
+
+.text-blue {
+    color: #2980b9; /* Màu xanh cho THÊM */
+}
+
+.cancel-row .item-name {
+    text-decoration: line-through; /* Gạch ngang tên món nếu là hủy hẳn */
+    color: #95a5a6;
+}
+/* 5. MODALS */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.modal-footer {
+    padding: 16px 24px 24px;
+    text-align: center;
+}
