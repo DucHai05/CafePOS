@@ -31,8 +31,8 @@ public class Ca {
     @Column(name = "trangThai", nullable = false)
     private String trangThai;
 
-    @Column(name = "soTienKet", precision = 15, scale = 2)
-    private BigDecimal soTienKet;
+    @Column(name = "soTienKet")
+    private Double soTienKet;
 
     @Column(name = "maNhanVien", length = 50, nullable = false)
     private String maNhanVien;
@@ -85,11 +85,11 @@ public class Ca {
         this.trangThai = trangThai;
     }
 
-    public BigDecimal getSoTienKet() {
+    public Double getSoTienKet() {
         return soTienKet;
     }
 
-    public void setSoTienKet(BigDecimal soTienKet) {
+    public void setSoTienKet(Double soTienKet) {
         this.soTienKet = soTienKet;
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DoanhThuRepository extends JpaRepository<DoanhThu, String> {
-    List<DoanhThu> findByMaCa(String maCa);
+    Optional<DoanhThu> findByMaCa(String maCa);
     Optional<DoanhThu> findFirstByMaCa(String maCa);
     Optional<DoanhThu> findTopByOrderByMaDoanhThuDesc();
 }

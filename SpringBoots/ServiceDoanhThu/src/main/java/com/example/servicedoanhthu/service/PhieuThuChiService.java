@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -37,7 +36,8 @@ public class PhieuThuChiService {
 
     @Transactional
     public PhieuThuChi create(PhieuThuChi phieuThuChi) {
-        if (phieuThuChi.getSoTien() == null || phieuThuChi.getSoTien().compareTo(BigDecimal.ZERO) <= 0) {
+        // 1. Kiểm tra số tiền hợp lệ
+        if (phieuThuChi.getSoTien() == null || phieuThuChi.getSoTien() <= 0) {
             throw new RuntimeException("So tien khong hop le");
         }
 
@@ -47,24 +47,34 @@ public class PhieuThuChiService {
         phieuThuChi.setLoaiPhieu(formatLoaiPhieu(loaiPhieu));
         phieuThuChi.setMaPhieu(generateMaPhieu(prefix));
 
+        // 2. Lấy thông tin Ca và Doanh Thu liên quan
         Ca ca = caRepository.findById(phieuThuChi.getMaCa())
                 .orElseThrow(() -> new RuntimeException("Khong tim thay ca voi ma: " + phieuThuChi.getMaCa()));
 
-        DoanhThu doanhThu = doanhThuRepository.findFirstByMaCa(phieuThuChi.getMaCa())
+        DoanhThu doanhThu = doanhThuRepository.findByMaCa(phieuThuChi.getMaCa())
                 .orElseGet(() -> initDoanhThu(phieuThuChi.getMaCa()));
 
-        BigDecimal soTien = defaultValue(phieuThuChi.getSoTien());
+        Double soTien = phieuThuChi.getSoTien();
 
+        // 3. Logic cập nhật dòng tiền (Sử dụng Double cực gọn)
         if ("thu".equals(loaiPhieu)) {
-            doanhThu.setTienThu(defaultValue(doanhThu.getTienThu()).add(soTien));
-            ca.setSoTienKet(defaultValue(ca.getSoTienKet()).add(soTien));
+            // Tăng tiền thu ở báo cáo + Tăng tiền mặt thực tế trong két
+            doanhThu.setTienThu(handleNull(doanhThu.getTienThu()) + soTien);
+            ca.setSoTienKet(handleNull(ca.getSoTienKet()) + soTien);
         } else if ("chi".equals(loaiPhieu)) {
-            doanhThu.setTienChi(defaultValue(doanhThu.getTienChi()).add(soTien));
-            ca.setSoTienKet(defaultValue(ca.getSoTienKet()).subtract(soTien));
+            // Tăng tiền chi ở báo cáo + Giảm tiền mặt thực tế trong két
+            doanhThu.setTienChi(handleNull(doanhThu.getTienChi()) + soTien);
+            ca.setSoTienKet(handleNull(ca.getSoTienKet()) - soTien);
         } else {
             throw new RuntimeException("Loai phieu khong hop le. Chi nhan 'Thu' hoac 'Chi'");
         }
 
+        // 4. Quan trọng: Cập nhật lại Tổng doanh thu sau khi thay đổi Thu/Chi
+        // Công thức: Tổng = (Tiền mặt + Chuyển khoản + Thu) - Chi
+        double tongMoi = (handleNull(doanhThu.getTienMat()) + handleNull(doanhThu.getTienCK()) + handleNull(doanhThu.getTienThu()))
+                - handleNull(doanhThu.getTienChi());
+
+        // 5. Lưu đồng bộ cả 3 bảng
         PhieuThuChi savedPhieuThuChi = phieuThuChiRepository.save(phieuThuChi);
         doanhThuRepository.save(doanhThu);
         caRepository.save(ca);
@@ -76,15 +86,16 @@ public class PhieuThuChiService {
         DoanhThu doanhThu = new DoanhThu();
         doanhThu.setMaDoanhThu("DT-" + maCa);
         doanhThu.setMaCa(maCa);
-        doanhThu.setTienMat(BigDecimal.ZERO);
-        doanhThu.setTienCK(BigDecimal.ZERO);
-        doanhThu.setTienThu(BigDecimal.ZERO);
-        doanhThu.setTienChi(BigDecimal.ZERO);
+        doanhThu.setTienMat(0.0);
+        doanhThu.setTienCK(0.0);
+        doanhThu.setTienThu(0.0);
+        doanhThu.setTienChi(0.0);
         return doanhThu;
     }
 
-    private BigDecimal defaultValue(BigDecimal value) {
-        return value == null ? BigDecimal.ZERO : value;
+    // Helper cực kỳ quan trọng để tránh lỗi NullPointerException khi cộng trừ
+    private Double handleNull(Double value) {
+        return value == null ? 0.0 : value;
     }
 
     private String normalize(String loaiPhieu) {
@@ -92,13 +103,9 @@ public class PhieuThuChiService {
     }
 
     private String resolvePrefix(String loaiPhieu) {
-        if ("thu".equals(loaiPhieu)) {
-            return "THU";
-        }
-        if ("chi".equals(loaiPhieu)) {
-            return "CHI";
-        }
-        throw new RuntimeException("Loai phieu khong hop le. Chi nhan 'Thu' hoac 'Chi'");
+        if ("thu".equals(loaiPhieu)) return "THU";
+        if ("chi".equals(loaiPhieu)) return "CHI";
+        throw new RuntimeException("Loai phieu khong hop le");
     }
 
     private String formatLoaiPhieu(String loaiPhieu) {

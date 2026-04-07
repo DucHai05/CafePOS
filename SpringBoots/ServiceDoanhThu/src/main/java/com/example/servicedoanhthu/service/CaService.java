@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -22,7 +21,6 @@ public class CaService {
     private static final String TRANG_THAI_DONG = "Đóng";
     private static final String MA_NHAN_VIEN_MAC_DINH = "NV001";
     private static final DateTimeFormatter TEN_CA_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM");
-    private static final BigDecimal ZERO = BigDecimal.ZERO;
 
     @Autowired
     private CaRepository caRepository;
@@ -61,12 +59,13 @@ public class CaService {
     }
 
     @Transactional
-    public Ca openCa(BigDecimal soTienKet) {
+    public Ca openCa(Double soTienKet) { // SỬA: Đổi tham số sang Double
         if (soTienKet == null) {
             throw new IllegalArgumentException("Số tiền trong két là bắt buộc.");
         }
 
-        if (soTienKet.compareTo(ZERO) < 0) {
+        // SỬA: Dùng toán tử < trực tiếp, bỏ compareTo
+        if (soTienKet < 0) {
             throw new IllegalArgumentException("Số tiền trong két không được âm.");
         }
 
@@ -82,13 +81,14 @@ public class CaService {
         ca.setMaCa(generateNextCaCode());
         ca.setMaNhanVien(MA_NHAN_VIEN_MAC_DINH);
         ca.setNgayThang(ngayMoCa);
-        ca.setSoTienKet(soTienKet);
+        ca.setSoTienKet(soTienKet); // Entity Ca cũng nên đổi sang Double
         ca.setTenCa(buildTenCa(gioMoCa, ngayMoCa));
         ca.setTrangThai(TRANG_THAI_MO);
         ca.setGioMoCa(gioMoCa);
         ca.setGioDongCa(null);
 
         Ca savedCa = caRepository.save(ca);
+        // Tự động tạo bản ghi doanh thu trống cho ca mới
         doanhThuRepository.save(createDoanhThu(savedCa.getMaCa()));
         return savedCa;
     }
@@ -108,10 +108,10 @@ public class CaService {
         DoanhThu doanhThu = new DoanhThu();
         doanhThu.setMaDoanhThu(generateNextDoanhThuCode());
         doanhThu.setMaCa(maCa);
-        doanhThu.setTienCK(ZERO);
-        doanhThu.setTienChi(ZERO);
-        doanhThu.setTienMat(ZERO);
-        doanhThu.setTienThu(ZERO);
+        doanhThu.setTienCK(0.0);
+        doanhThu.setTienChi(0.0);
+        doanhThu.setTienMat(0.0);
+        doanhThu.setTienThu(0.0);
         return doanhThu;
     }
 
@@ -131,7 +131,6 @@ public class CaService {
 
     private String generateNextCode(String prefix, String lastCode) {
         int nextNumber = 1;
-
         if (lastCode != null && lastCode.startsWith(prefix)) {
             String numericPart = lastCode.substring(prefix.length());
             try {
@@ -140,7 +139,6 @@ public class CaService {
                 nextNumber = 1;
             }
         }
-
         return prefix + String.format("%03d", nextNumber);
     }
 
@@ -153,13 +151,11 @@ public class CaService {
         } else {
             buoi = "Tối";
         }
-
         return buoi + " " + ngayMoCa.format(TEN_CA_DATE_FORMAT);
     }
+
     public String getMaCaByTrangThaiOpen() {
-        String trangThai = "Mở";
-        // Gọi hàm đã có @Query ở trên
-        String maCa = caRepository.findMaCaByTrangThai(trangThai);
+        String maCa = caRepository.findMaCaByTrangThai(TRANG_THAI_MO);
         return maCa;
     }
 }

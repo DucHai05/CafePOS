@@ -17,8 +17,8 @@ public class PhieuThuChi {
     @Column(name = "maCa", length = 50, nullable = false)
     private String maCa;
 
-    @Column(name = "soTien", precision = 15, scale = 2, nullable = false)
-    private BigDecimal soTien;
+    @Column(name = "soTien")
+    private Double soTien;
 
     @Column(name = "ghiChu")
     private String ghiChu;
@@ -42,11 +42,11 @@ public class PhieuThuChi {
         this.maCa = maCa;
     }
 
-    public BigDecimal getSoTien() {
+    public Double getSoTien() {
         return soTien;
     }
 
-    public void setSoTien(BigDecimal soTien) {
+    public void setSoTien(Double soTien) {
         this.soTien = soTien;
     }
 

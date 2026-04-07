@@ -17,12 +17,11 @@ const DoanhThuManager = () => {
         fetchData();
     }, []);
 
-    const fetchData = async () => {
+const fetchData = async () => {
         try {
             setLoading(true);
             setError(null);
 
-            // Fetch doanh thu và ca song song
             const [doanhThuResponse, caResponse] = await Promise.all([
                 axios.get(API_URL_DOANHTHU),
                 axios.get(API_URL_CA)
@@ -31,15 +30,11 @@ const DoanhThuManager = () => {
             const doanhThuData = doanhThuResponse.data || [];
             const caData = caResponse.data || [];
 
-            // Tạo map để tra cứu thông tin ca nhanh
             const caMap = {};
             caData.forEach(ca => {
-                if (ca.maCa) {
-                    caMap[ca.maCa] = ca;
-                }
+                if (ca.maCa) caMap[ca.maCa] = ca;
             });
 
-            // Kết hợp dữ liệu doanh thu với thông tin ca
             const enrichedDoanhThus = doanhThuData.map(dt => {
                 const matchedCa = caMap[dt.maCa] || (dt.ca && caMap[dt.ca.maCa]) || null;
                 return {
@@ -49,6 +44,17 @@ const DoanhThuManager = () => {
                 };
             });
 
+            // ✅ DI CHUYỂN ĐOẠN LOG VÀO ĐÂY (Bên trong try block)
+            console.log(">>> [DEBUG] Dữ liệu Doanh Thu gốc từ API (8084):", doanhThuData);
+            
+            console.table(enrichedDoanhThus.map(dt => ({
+                "Mã Ca": dt.maCa,
+                "Tiền Mặt": dt.tienMat,
+                "Chuyển Khoản": dt.tienCK,
+                "Tổng Cộng": dt.tongDoanhThu
+            })));
+            // -------------------------------------------
+
             setDoanhThus(enrichedDoanhThus);
         } catch (error) {
             console.error('Lỗi khi tải dữ liệu doanh thu:', error);
@@ -57,6 +63,7 @@ const DoanhThuManager = () => {
             setLoading(false);
         }
     };
+    
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);

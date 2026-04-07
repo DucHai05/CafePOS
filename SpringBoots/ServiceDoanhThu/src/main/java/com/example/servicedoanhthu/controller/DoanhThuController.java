@@ -1,15 +1,18 @@
 package com.example.servicedoanhthu.controller;
 
+import com.example.servicedoanhthu.DTO.UpdateDoanhThuDTO;
 import com.example.servicedoanhthu.entity.DoanhThu;
 import com.example.servicedoanhthu.service.DoanhThuService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/doanhthu")
@@ -29,7 +32,21 @@ public class DoanhThuController {
     }
 
     @GetMapping("/ca/{maCa}")
-    public List<DoanhThu> getByMaCa(@PathVariable String maCa) {
+    public DoanhThu getByMaCa(@PathVariable String maCa) {
         return service.getByMaCa(maCa);
+    }
+
+    @PutMapping("/update-after-payment/{maCa}")
+    public ResponseEntity<?> updateRevenue(
+            @PathVariable String maCa,
+            @RequestBody UpdateDoanhThuDTO dto // Dùng cái DTO Hải vừa tạo ở đây
+    ) {
+        // Truyền dữ liệu từ DTO vào Service
+        DoanhThu updated = service.updateRevenueAfterPayment(
+                maCa,
+                dto.getAmount(),
+                dto.getMethod()
+        );
+        return ResponseEntity.ok(updated);
     }
 }

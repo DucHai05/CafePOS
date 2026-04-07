@@ -51,7 +51,7 @@ public class CaController {
     }
 
     @PostMapping("/mo-ca")
-    public Ca openCa(@RequestParam BigDecimal soTienKet) {
+    public Ca openCa(@RequestParam Double soTienKet) {
         return service.openCa(soTienKet);
     }
 

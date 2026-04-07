@@ -17,17 +17,17 @@ public class DoanhThu {
     @Column(name = "maCa", length = 50, nullable = false)
     private String maCa;
 
-    @Column(name = "tienMat", precision = 15, scale = 2)
-    private BigDecimal tienMat;
+    @Column(name = "tienMat")
+    private Double tienMat;
 
-    @Column(name = "tienCK", precision = 15, scale = 2)
-    private BigDecimal tienCK;
+    @Column(name = "tienCK")
+    private Double tienCK;
 
-    @Column(name = "tienThu", precision = 15, scale = 2)
-    private BigDecimal tienThu;
+    @Column(name = "tienThu")
+    private Double tienThu;
 
-    @Column(name = "tienChi", precision = 15, scale = 2)
-    private BigDecimal tienChi;
+    @Column(name = "tienChi")
+    private Double tienChi;
 
     public String getMaDoanhThu() {
         return maDoanhThu;
@@ -45,35 +45,35 @@ public class DoanhThu {
         this.maCa = maCa;
     }
 
-    public BigDecimal getTienMat() {
+    public Double getTienMat() {
         return tienMat;
     }
 
-    public void setTienMat(BigDecimal tienMat) {
+    public void setTienMat(Double tienMat) {
         this.tienMat = tienMat;
     }
 
-    public BigDecimal getTienCK() {
+    public Double getTienCK() {
         return tienCK;
     }
 
-    public void setTienCK(BigDecimal tienCK) {
+    public void setTienCK(Double tienCK) {
         this.tienCK = tienCK;
     }
 
-    public BigDecimal getTienThu() {
+    public Double getTienThu() {
         return tienThu;
     }
 
-    public void setTienThu(BigDecimal tienThu) {
+    public void setTienThu(Double tienThu) {
         this.tienThu = tienThu;
     }
 
-    public BigDecimal getTienChi() {
+    public Double getTienChi() {
         return tienChi;
     }
 
-    public void setTienChi(BigDecimal tienChi) {
+    public void setTienChi(Double tienChi) {
         this.tienChi = tienChi;
     }
 }
