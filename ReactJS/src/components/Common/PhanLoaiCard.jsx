@@ -1,4 +1,5 @@
 import React from 'react';
+import '../CommonCSS/phanLoaiCard.css';
 
 const POSCard = ({ title, subtitle, onClick, type = 'product', isActive = false }) => {
     return (

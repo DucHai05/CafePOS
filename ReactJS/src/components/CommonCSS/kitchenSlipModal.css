@@ -1,33 +1,168 @@
-.item-action {
-    font-size: 0.9rem;
-    font-weight: bold;
-    margin-top: 2px;
-}
-
-.text-red {
-    color: #e74c3c; /* Màu đỏ cho HỦY */
-}
-
-.text-blue {
-    color: #2980b9; /* Màu xanh cho THÊM */
-}
-
-.cancel-row .item-name {
-    text-decoration: line-through; /* Gạch ngang tên món nếu là hủy hẳn */
-    color: #95a5a6;
-}
-/* 5. MODALS */
+/* --- OVERLAY LÀM MỜ --- */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.6);
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
+  z-index: 3000;
+  padding: 20px;
 }
-.modal-footer {
-    padding: 16px 24px 24px;
-    text-align: center;
+
+/* --- TỜ PHIẾU BẾP (PAPER) --- */
+.kitchen-paper {
+  background: white;
+  width: 100%;
+  max-width: 380px;
+  padding: 32px;
+  border-radius: 2px; /*Receipt thường vuông vức hơn*/
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  position: relative;
+  font-family: 'Inter', system-ui, sans-serif;
 }
+
+/* Răng cưa giả lập phiếu in (Tùy chọn) */
+.kitchen-paper::before {
+  content: "";
+  position: absolute;
+  top: -10px; left: 0; right: 0;
+  height: 10px;
+  background-image: linear-gradient(135deg, white 50%, transparent 50%), 
+                    linear-gradient(225deg, white 50%, transparent 50%);
+  background-size: 10px 10px;
+}
+
+/* --- HEADER --- */
+.kitchen-header {
+  text-align: center;
+  border-bottom: 2px dashed var(--slate-200);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.kitchen-header h2 {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--slate-900);
+  letter-spacing: 2px;
+  margin: 0 0 8px 0;
+}
+
+.order-type {
+  display: inline-block;
+  padding: 4px 16px;
+  background: var(--slate-900);
+  color: white;
+  border-radius: 4px;
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+.order-type.type-adjust {
+  background: #f97316; /* Màu cam cảnh báo điều chỉnh */
+}
+
+/* --- THÔNG TIN BÀN --- */
+.kitchen-info {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.kitchen-info strong {
+  font-size: 1.5rem;
+  color: var(--indigo-600);
+}
+
+/* --- BẢNG DANH SÁCH MÓN --- */
+.kitchen-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 24px;
+}
+
+.kitchen-table tr {
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.kitchen-table tr:last-child {
+  border-bottom: 2px dashed var(--slate-200);
+}
+
+.kitchen-table td {
+  padding: 16px 0;
+  vertical-align: middle;
+}
+
+/* Tên món siêu to */
+.item-name-big {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--slate-900);
+  line-height: 1.2;
+}
+
+/* Số lượng nổi bật */
+.item-qty-big {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--slate-900);
+  min-width: 60px;
+}
+
+/* Nhãn hành động (Hủy/Thêm) */
+.item-action-tag {
+  display: inline-block;
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.txt-red { color: #ef4444; }
+.txt-blue { color: var(--indigo-600); }
+
+/* Món bị hủy thì gạch ngang tên */
+.row-cancel .item-name-big {
+  text-decoration: line-through;
+  color: var(--slate-400);
+}
+
+/* --- NÚT BẤM --- */
+.receipt-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.receipt-actions button {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.btn-print {
+  background: var(--indigo-600);
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.btn-print:hover {
+  background: var(--indigo-700);
+  transform: translateY(-2px);
+}
+
+.btn-close {
+  background: var(--slate-100);
+  color: var(--slate-600);
+}
+
+.btn-close:hover {
+  background: var(--slate-200);
+}
+
+.text-right { text-align: right; }

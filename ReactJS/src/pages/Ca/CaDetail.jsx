@@ -1,18 +1,33 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { 
+  ChevronLeft, 
+  Clock, 
+  User, 
+  Calendar, 
+  DollarSign, 
+  CreditCard, 
+  ArrowUpCircle, 
+  ArrowDownCircle, 
+  Wallet,
+  ShoppingBag,
+  Search,
+  Filter,
+  FileText,
+  Tag
+} from 'lucide-react';
 import './CaDetail.css';
 
 const API_URL_DOANHTHU = 'http://localhost:8084/api/doanhthu';
 const API_URL_HOADON = 'http://localhost:8081/api/hoadon';
 
-const CaDetail = ({ ca, banMap, onBack }) => {
+const CaDetail = ({ ca, onBack }) => {
     const [searchText, setSearchText] = useState('');
     const [category, setCategory] = useState('Tất cả');
     const [doanhThu, setDoanhThu] = useState(null);
     const [orders, setOrders] = useState([]); 
     const [loading, setLoading] = useState(true);
 
-    // 1. Fetch dữ liệu song song từ 2 Service
     useEffect(() => {
         const fetchData = async () => {
             if (!ca?.maCa) return;
@@ -36,23 +51,17 @@ const CaDetail = ({ ca, banMap, onBack }) => {
         fetchData();
     }, [ca]);
 
-    // 2. Tính toán tiền từ Hóa đơn (8081) - Dùng cái này để hiển thị
-    // Đổi hoaDons thành orders
+    // Logic tính toán (Giữ nguyên logic của Hải nhưng bọc trong useMemo)
     const totals = useMemo(() => {
-        return orders.reduce((acc, order) => { // Sửa ở đây
+        return orders.reduce((acc, order) => {
             const amount = Number(order.tongTienSauKM || order.tongTien || 0);
             const method = order.phuongThucThanhToan;
-
-            if (method === 'CASH' || method === 'Tiền mặt') {
-                acc.cash += amount;
-            } else if (method === 'TRANSFER' || method === 'Chuyển khoản') {
-                acc.transfer += amount;
-            }
+            if (method === 'CASH' || method === 'Tiền mặt') acc.cash += amount;
+            else if (method === 'TRANSFER' || method === 'Chuyển khoản') acc.transfer += amount;
             return acc;
         }, { cash: 0, transfer: 0 });
     }, [orders]);
 
-    // 3. Xử lý danh sách sản phẩm (Lấy trực tiếp từ orders)
     const allProductsInOrders = useMemo(() => {
         const extracted = [];
         orders.forEach((order) => {
@@ -71,7 +80,6 @@ const CaDetail = ({ ca, banMap, onBack }) => {
         return extracted;
     }, [orders]);
 
-    // 4. Lọc sản phẩm theo Search và Category cho UI
     const categories = useMemo(() => {
         return ['Tất cả', ...Array.from(new Set(allProductsInOrders.map((item) => item.loai)))];
     }, [allProductsInOrders]);
@@ -85,119 +93,155 @@ const CaDetail = ({ ca, banMap, onBack }) => {
         });
     }, [allProductsInOrders, category, searchText]);
 
-    // 5. Khai báo biến hiển thị (Mapping dữ liệu)
-    const cashValue = totals.cash > 0 ? totals.cash : (doanhThu?.tienMat || 0);
-    const transferValue = totals.transfer > 0 ? totals.transfer : (doanhThu?.tienCK || 0);
-    const totalRevenue = cashValue + transferValue;
-    const safeCash = Number(ca.soTienKet || 0); 
-    const thuValue = Number(doanhThu?.tienThu ?? 0);
-    const chiValue = Number(doanhThu?.tienChi ?? 0);
-
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
     };
-    
-    if (loading) return <div className="loading">Đang đối soát dữ liệu ca...</div>;
+
+    if (loading) return (
+        <div className="ca-loading-container">
+            <div className="loader"></div>
+            <p>Đang đối soát dữ liệu ca {ca.maCa}...</p>
+        </div>
+    );
 
     return (
-        <div className="detail-page">
-            <div className="detail-header-bar">
-                <button className="back-button" onClick={onBack}>&larr; Trở lại</button>
-                <h2>Chi tiết ca làm việc</h2>
-            </div>
-
-            <div className="detail-top-grid">
-                {/* Thẻ thông tin */}
-                <div className="detail-card">
-                    <h3>📋 Thông tin ca</h3>
-                    <div className="info-row"><span>Mã ca</span><strong>{ca.maCa || '-'}</strong></div>
-                    <div className="info-row"><span>Nhân viên</span><strong>{ca.tenNhanVien || ca.maNhanVien || '-'}</strong></div>
-                    <div className="info-row"><span>Ngày</span><strong>{ca.ngayThang || '-'}</strong></div>
-                    <div className="info-row"><span>Giờ mở</span><strong>{ca.gioMoCa || '-'}</strong></div>
-                    <div className="info-row"><span>Giờ đóng</span><strong>{ca.gioDongCa || 'Đang mở'}</strong></div>
-                    <div className="info-row">
-                        <span>Trạng thái</span>
-                        <span className="status-badge">{ca.trangThai || 'Đang hoạt động'}</span>
-                    </div>
-                </div>
-
-                {/* Thẻ doanh thu */}
-                <div className="detail-card">
-                    <h3>💰 Tổng hợp doanh thu</h3>
-                    <div className="summary-grid">
-                        <div className="summary-item">
-                            <span className="label">Tiền mặt</span>
-                            <span className="value">{formatCurrency(cashValue)}</span>
-                        </div>
-                        <div className="summary-item">
-                            <span className="label">Chuyển khoản</span>
-                            <span className="value">{formatCurrency(transferValue)}</span>
-                        </div>
-                        
-                        <div className="summary-item summary-split">
-                            <div className="split-box thu">
-                                <span className="label">Thu</span>
-                                <span className="value">+{formatCurrency(thuValue)}</span>
-                            </div>
-                            <div className="split-box chi">
-                                <span className="label">Chi</span>
-                                <span className="value">-{formatCurrency(chiValue)}</span>
-                            </div>
-                        </div>
-
-                        <div className="summary-item summary-safe">
-                            <span className="label">Tiền trong két</span>
-                            <span className="value">{formatCurrency(safeCash)}</span>
-                        </div>
-
-                        <div className="summary-item total">
-                            <span className="label">TỔNG DOANH THU</span>
-                            <span className="value">{formatCurrency(totalRevenue)}</span>
-                        </div>
-                    </div>
+        <div className="ca-detail-container">
+            {/* TOP NAVIGATION */}
+            <div className="ca-detail-nav">
+                <button className="btn-back-ghost" onClick={onBack}>
+                    <ChevronLeft size={20} /> Quay lại danh sách
+                </button>
+                <div className="ca-title-group">
+                    <h1>Chi tiết ca làm việc</h1>
+                    <span className={`badge-status ${ca.trangThai === 'Đã đóng' ? 'closed' : 'active'}`}>
+                        {ca.trangThai || 'Đang mở'}
+                    </span>
                 </div>
             </div>
 
-            <div className="detail-section">
+            <div className="ca-detail-grid">
+                {/* LEFT COLUMN: SHIFT INFO */}
+                <div className="ca-info-card">
+                    <div className="card-header">
+                        <Clock size={20} /> <h3>Thông tin vận hành</h3>
+                    </div>
+                    <div className="info-list">
+                        <div className="info-item">
+                            <label><Tag size={14}/> Mã ca</label>
+                            <span>{ca.maCa}</span>
+                        </div>
+                        <div className="info-item">
+                            <label><User size={14}/> Nhân viên</label>
+                            <span>{ca.tenNhanVien || ca.maNhanVien}</span>
+                        </div>
+                        <div className="info-item">
+                            <label><Calendar size={14}/> Ngày làm việc</label>
+                            <span>{ca.ngayThang}</span>
+                        </div>
+                        <div className="info-item">
+                            <label><Clock size={14}/> Thời gian</label>
+                            <span>{ca.gioMoCa} - {ca.gioDongCa || '---'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* RIGHT COLUMN: REVENUE SUMMARY */}
+                <div className="ca-revenue-card">
+                    <div className="card-header">
+                        <DollarSign size={20} /> <h3>Tổng hợp doanh thu</h3>
+                    </div>
+                    <div className="revenue-stats-grid">
+                        <div className="stat-box">
+                            <div className="stat-icon cash"><DollarSign size={20}/></div>
+                            <div className="stat-info">
+                                <label>Tiền mặt</label>
+                                <h4>{formatCurrency(totals.cash || doanhThu?.tienMat)}</h4>
+                            </div>
+                        </div>
+                        <div className="stat-box">
+                            <div className="stat-icon transfer"><CreditCard size={20}/></div>
+                            <div className="stat-info">
+                                <label>Chuyển khoản</label>
+                                <h4>{formatCurrency(totals.transfer || doanhThu?.tienCK)}</h4>
+                            </div>
+                        </div>
+                        <div className="stat-box thu">
+                            <div className="stat-icon"><ArrowUpCircle size={20}/></div>
+                            <div className="stat-info">
+                                <label>Tổng thu</label>
+                                <h4 className="text-success">+{formatCurrency(doanhThu?.tienThu)}</h4>
+                            </div>
+                        </div>
+                        <div className="stat-box chi">
+                            <div className="stat-icon"><ArrowDownCircle size={20}/></div>
+                            <div className="stat-info">
+                                <label>Tổng chi</label>
+                                <h4 className="text-danger">-{formatCurrency(doanhThu?.tienChi)}</h4>
+                            </div>
+                        </div>
+                        <div className="stat-box full-width highlight">
+                            <div className="stat-icon wallet"><Wallet size={24}/></div>
+                            <div className="stat-info">
+                                <label>Tổng thực thu trong ca (Doanh số)</label>
+                                <h2>{formatCurrency(totals.cash + totals.transfer)}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* PRODUCT TABLE SECTION */}
+            <div className="ca-products-section">
                 <div className="section-header">
-                    <h3>Sản phẩm đã bán</h3>
-                    <div className="section-actions">
-                        <input
-                            type="text"
-                            placeholder="Tìm mã, tên..."
-                            value={searchText}
-                            onChange={(e) => setSearchText(e.target.value)}
-                        />
-                        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-                            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                        </select>
+                    <div className="header-left">
+                        <ShoppingBag size={22} />
+                        <h3>Sản phẩm đã bán trong ca</h3>
+                    </div>
+                    <div className="header-filters">
+                        <div className="search-input">
+                            <Search size={18} />
+                            <input 
+                                type="text" 
+                                placeholder="Tìm món..." 
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                            />
+                        </div>
+                        <div className="filter-select">
+                            <Filter size={18} />
+                            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                                {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                            </select>
+                        </div>
                     </div>
                 </div>
-                
-                <div className="table-wrapper">
-                    <table className="product-table">
+
+                <div className="ca-table-wrapper">
+                    <table className="ca-modern-table">
                         <thead>
                             <tr>
                                 <th>Mã SP</th>
                                 <th>Tên sản phẩm</th>
-                                <th>Loại</th>
-                                <th>SL</th>
+                                <th>Phân loại</th>
+                                <th>Số lượng</th>
                                 <th>Đơn giá</th>
-                                <th>Thành tiền</th>
+                                <th style={{ textAlign: 'right' }}>Thành tiền</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredProducts.length === 0 ? (
-                                <tr><td colSpan="6" className="empty-row">Không tìm thấy sản phẩm.</td></tr>
+                                <tr><td colSpan="6" className="empty-row">Không có dữ liệu bán hàng trong ca này.</td></tr>
                             ) : (
                                 filteredProducts.map((p, i) => (
                                     <tr key={`${p.maSP}-${i}`}>
-                                        <td><strong>{p.maSP}</strong></td>
-                                        <td>{p.tenSP}</td>
-                                        <td>{p.loai}</td>
+                                        <td className="font-mono">{p.maSP}</td>
+                                        <td className="font-semibold">{p.tenSP}</td>
+                                        <td><span className="category-pill">{p.loai}</span></td>
                                         <td>{p.soLuong}</td>
-                                        <td>{p.donGia.toLocaleString()} đ</td>
-                                        <td><strong>{p.thanhTien.toLocaleString()} đ</strong></td>
+                                        <td>{p.donGia.toLocaleString()}đ</td>
+                                        <td style={{ textAlign: 'right' }} className="font-bold">
+                                            {p.thanhTien.toLocaleString()}đ
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -206,14 +250,15 @@ const CaDetail = ({ ca, banMap, onBack }) => {
                 </div>
             </div>
 
-            <div className="detail-bottom-grid">
-                <div className="detail-card">
-                    <h3>Ghi chú ca</h3>
-                    <p>{ca.ghiChu || 'Không có ghi chú.'}</p>
+            {/* BOTTOM SECTION: NOTES */}
+            <div className="ca-bottom-grid">
+                <div className="note-card">
+                    <div className="card-header"><FileText size={18}/> <h3>Ghi chú bàn giao</h3></div>
+                    <p>{ca.ghiChu || 'Không có ghi chú phát sinh.'}</p>
                 </div>
-                <div className="detail-card">
-                    <h3>Khuyến mãi</h3>
-                    <p>{ca.khuyenMai || 'Không áp dụng.'}</p>
+                <div className="note-card">
+                    <div className="card-header"><Tag size={18}/> <h3>Chương trình khuyến mãi</h3></div>
+                    <p>{ca.khuyenMai || 'Không có chương trình áp dụng.'}</p>
                 </div>
             </div>
         </div>

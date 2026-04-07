@@ -8,6 +8,9 @@ import DoanhThuPage from './pages/DoanhThu/DoanhThuList';
 import CaPage from './pages/Ca/CaManager';
 import KhuVucManager from './pages/KhuVuc/KhuVucManager';
 import BanPage from './pages/Ban/BanManager';
+import PaymentPage from './pages/PaymentPage/PaymentPage';
+import Dashboard from './pages/DashboardPage/DashboardPage';
+
 
 // 2. Định nghĩa lại TableManager với Logic State
 const TableManager = () => {
@@ -41,17 +44,7 @@ const TableManager = () => {
   );
 };
 
-// Trang Dashboard (giữ nguyên)
-const Dashboard = () => (
-  <div style={{ padding: '20px' }}>
-    <h2>Thống kê nhanh hôm nay</h2>
-    <div style={statsGrid}>
-      <div style={statCard}>💰 Doanh thu: 2.500.000đ</div>
-      <div style={statCard}>📝 Đơn mới: 12</div>
-      <div style={statCard}>☕ Món bán chạy: Cafe Sữa</div>
-    </div>
-  </div>
-);
+
 
 function App() {
   return (
@@ -66,6 +59,7 @@ function App() {
           <Route path="/doanh-thu" element={<DoanhThuPage />} />
           <Route path="/order/:maBan" element={<OrderPage />} />
           <Route path="/table-map" element={<TableManager />} />
+          <Route path="/payment/:maBan" element={<PaymentPage />} />
         </Route>
       </Routes>
     </Router>

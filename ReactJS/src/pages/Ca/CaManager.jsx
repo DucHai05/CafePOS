@@ -1,8 +1,20 @@
 ﻿import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { 
+  Wallet, 
+  Clock, 
+  User, 
+  Receipt, 
+  AlertCircle, 
+  ChevronRight,
+  ArrowRightCircle,
+  Calendar,
+  Lock,
+  Unlock,
+  Tag
+} from 'lucide-react';
 import DoanhThuManager from './DoanhThuManager.jsx';
 import CaDetail from './CaDetail.jsx';
-import HoaDonDetail from '../HoaDon/HoaDonDetail.jsx';
 import './CaManager.css';
 
 const API_URL = 'http://localhost:8084/api/ca';
@@ -10,7 +22,6 @@ const API_URL_HOADON = 'http://localhost:8081/api/hoadon';
 const API_URL_BAN = 'http://localhost:8083/api/ban';
 
 const CaManager = () => {
-    const [cas, setCas] = useState([]);
     const [activeCa, setActiveCa] = useState(null);
     const [showDetail, setShowDetail] = useState(false);
     const [tab, setTab] = useState('orders');
@@ -30,40 +41,10 @@ const CaManager = () => {
         try {
             const response = await axios.get(`${API_URL}/kiem-tra-ca-mo`);
             const data = response.data || {};
-            console.log('Check ca mo response:', data);
-
             setActiveCa(data.ca || null);
             setOpenShiftDialog(data.batBuocMoCa === true);
-
-            // Hiển thị message từ backend nếu có
-            if (data.message) {
-                console.log('Backend message:', data.message);
-            }
         } catch (error) {
-            console.warn('Không thể gọi kiem-tra-ca-mo, fallback về fetchCas', error);
-            fetchCas();
-        }
-    };
-
-    const fetchCas = async () => {
-        try {
-            const response = await axios.get(API_URL);
-            const data = response.data;
-            setCas(data);
-            
-            // Tìm ca đang hoạt động
-            const currentActive = data.find(c => c.trangThai === 'Mở');
-            
-            if (currentActive) {
-                setActiveCa(currentActive);
-                setOpenShiftDialog(false);
-            } else {
-                // KHÔNG CÓ CA ĐANG MỞ -> Bật ngay dialog yêu cầu mở ca
-                setActiveCa(null);
-                setOpenShiftDialog(true);
-            }
-        } catch (error) {
-            console.error('Lỗi khi tải danh sách ca', error);
+            console.warn('Lỗi kiểm tra ca, fallback...');
         }
     };
 
@@ -75,49 +56,7 @@ const CaManager = () => {
                 if (ban.maBan) map[ban.maBan] = ban.tenBan || ban.maBan;
             });
             setBanMap(map);
-        } catch (error) {
-            console.error('Lỗi khi tải danh sách bàn', error);
-        }
-    };
-
-    // Logic xử lý gọi API mở ca mới
-    const handleConfirmOpenCa = async () => {
-        const amount = parseFloat(initialCash);
-        if (isNaN(amount) || amount < 0) {
-            alert('Vui lòng nhập số tiền ban đầu hợp lệ.');
-            return;
-        }
-
-        try {
-            console.log('Sending query param:', { soTienKet: amount });
-            const response = await axios.post(`${API_URL}/mo-ca`, null, {
-                params: { soTienKet: amount }
-            });
-            console.log('Response:', response);
-
-            const newCa = response.data;
-            alert(`Mở ca ${newCa.maCa} (${newCa.tenCa}) thành công!`);
-
-            setOpenShiftDialog(false);
-            setInitialCash('');
-            fetchOpenCaState(); // Tải lại trạng thái ca từ backend
-        } catch (error) {
-            console.error('Lỗi khi mở ca:', error);
-            console.error('Response data:', error.response?.data);
-            console.error('Response status:', error.response?.status);
-            const errorMessage = error.response?.data?.error ||
-                               error.response?.data?.message ||
-                               error.message;
-            alert(`Không thể mở ca mới. Lỗi: ${errorMessage}`);
-        }
-    };
-
-    // Các hàm format và fetch phụ trợ (giữ nguyên như cũ)
-    const formatCurrency = (v) => typeof v === 'number' ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v) : '-';
-    const formatDateTime = (s) => {
-        if (!s || s === '-') return '-';
-        const d = new Date(s);
-        return isNaN(d.getTime()) ? s : `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+        } catch (e) { console.error(e); }
     };
 
     const fetchHoaDons = async () => {
@@ -127,60 +66,73 @@ const CaManager = () => {
         } catch (e) { console.error(e); }
     };
 
-    const handleCloseCa = async () => {
-        if (!activeCa?.maCa) return;
+    const handleConfirmOpenCa = async () => {
+        const amount = parseFloat(initialCash);
+        if (isNaN(amount) || amount < 0) {
+            alert('Vui lòng nhập số tiền ban đầu hợp lệ.');
+            return;
+        }
         try {
-            await axios.put(`${API_URL}/${activeCa.maCa}/dong-ca`);
-            await fetchOpenCaState(); // Tải lại trạng thái ca từ backend
-            alert(`Đã đóng ca thành công.`);
-        } catch (e) {
-            console.error('Lỗi đóng ca', e);
-            alert('Lỗi đóng ca');
+            const response = await axios.post(`${API_URL}/mo-ca`, null, {
+                params: { soTienKet: amount }
+            });
+            alert(`Mở ca thành công!`);
+            setOpenShiftDialog(false);
+            setInitialCash('');
+            fetchOpenCaState();
+        } catch (error) {
+            alert(`Không thể mở ca: ${error.response?.data?.message || error.message}`);
         }
     };
 
-    const getOrderTableName = (order) => {
-        return order.tenBan || order.ban || banMap[order.maBan] || order.maBan || 'Không xác định';
+    const handleCloseCa = async () => {
+        if (!activeCa?.maCa) return;
+        if (!window.confirm("Hải có chắc muốn kết thúc ca làm việc này không?")) return;
+        try {
+            await axios.put(`${API_URL}/${activeCa.maCa}/dong-ca`);
+            fetchOpenCaState();
+            alert(`Đã đóng ca thành công!`);
+        } catch (e) { alert('Lỗi khi đóng ca'); }
     };
 
+    const formatCurrency = (v) => v ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(v) : '0 ₫';
+    const getOrderTableName = (order) => order.tenBan || order.ban || banMap[order.maBan] || order.maBan || 'N/A';
     const filteredHoaDons = hoaDons.filter(o => o.maCa === activeCa?.maCa);
 
+    // Xử lý chuyển hướng UI
     if (selectedOrder) return <HoaDonDetail order={selectedOrder} onBack={() => setSelectedOrder(null)} />;
 
     if (showDetail && activeCa) {
         return (
-            <div className="ca-container">
-                <CaDetail
-                    ca={activeCa}
-                    orders={hoaDons}
-                    banMap={banMap}
-                    onBack={() => setShowDetail(false)}
-                />
-                <DoanhThuManager ca={activeCa} onRefreshCa={fetchCas} />
+            <div className="ca-manager-wrapper">
+                <CaDetail ca={activeCa} orders={hoaDons} banMap={banMap} onBack={() => setShowDetail(false)} />
+                <div style={{ marginTop: '24px' }}>
+                    <DoanhThuManager ca={activeCa} onRefreshCa={fetchOpenCaState} />
+                </div>
             </div>
         );
     }
 
-    // TRƯỜNG HỢP: KHÔNG CÓ CA HOẠT ĐỘNG
+    // TRƯỜNG HỢP: KHÔNG CÓ CA HOẠT ĐỘNG (LOCK SCREEN)
     if (!activeCa && openShiftDialog) {
         return (
-            <div className="ca-container no-active-ca">
-                <div className="no-shift-overlay" />
-                <div className="modal-shift forced">
-                    <div className="modal-shift-content">
-                        <h2>⚠️ Chưa có ca làm việc</h2>
-                        <p>Bạn phải mở ca mới để bắt đầu bán hàng.</p>
-                        <hr />
-                        <label>Số tiền mặt ban đầu (VND):</label>
-                        <input 
-                            type="number" 
-                            autoFocus
-                            value={initialCash} 
-                            onChange={(e) => setInitialCash(e.target.value)} 
-                            placeholder="Nhập số tiền..."
-                        />
-                        <button className="confirm-btn open-now" onClick={handleConfirmOpenCa}>
-                            XÁC NHẬN MỞ CA
+            <div className="ca-lock-screen">
+                <div className="lock-panel">
+                    <div className="lock-icon-box"><Lock size={32} /></div>
+                    <h2>Chưa có ca làm việc</h2>
+                    <p>Hệ thống yêu cầu khởi tạo ca mới để bắt đầu bán hàng.</p>
+                    <div className="shift-form">
+                        <label>Số tiền mặt đầu ca (VND)</label>
+                        <div className="input-with-icon">
+                            <Wallet size={20} />
+                            <input 
+                                type="number" autoFocus value={initialCash} 
+                                onChange={(e) => setInitialCash(e.target.value)} 
+                                placeholder="Nhập số tiền đầu ca..."
+                            />
+                        </div>
+                        <button className="btn-open-now" onClick={handleConfirmOpenCa}>
+                            <Unlock size={20} /> XÁC NHẬN MỞ CA
                         </button>
                     </div>
                 </div>
@@ -189,64 +141,99 @@ const CaManager = () => {
     }
 
     return (
-        <div className="ca-container">
-            <h1>Quản lý ca</h1>
-
-            <div className="ca-card">
-                <div className="card-meta">
-                    <p className="meta-label">Ca đang làm việc {activeCa?.trangThai === 'Đóng' && '(Đã đóng)'}</p>
-                    <span>{activeCa?.tenCa || `Ngày: ${activeCa?.ngayThang || '-'}`}</span>
+        <div className="ca-manager-wrapper">
+            <header className="manager-header">
+                <div className="header-title">
+                    <h1>Quản lý ca</h1>
+                    <p>Theo dõi tình trạng vận hành của cửa hàng</p>
                 </div>
+                <div className={`ca-status-pill ${activeCa ? 'active' : 'closed'}`}>
+                    <span className="dot"></span>
+                    {activeCa ? 'Ca đang hoạt động' : 'Chưa mở ca'}
+                </div>
+            </header>
 
-                <div className="ca-grid">
-                    <div className="ca-field"><label>Mã ca</label><span>{activeCa?.maCa}</span></div>
-                    <div className="ca-field"><label>Nhân viên</label><span>{activeCa?.maNhanVien || '-'}</span></div>
-                    <div className="ca-field"><label>Giờ mở</label><span>{formatDateTime(activeCa?.gioMoCa || activeCa?.gioBatDau)}</span></div>
-                    <div className="ca-field">
-                        <label>Giờ đóng</label>
-                        <span>{activeCa?.trangThai === 'Đóng' ? formatDateTime(activeCa?.gioDongCa) : 'Mở'}</span>
+            {/* THẺ CA HIỆN TẠI */}
+            <div className="active-ca-card">
+                <div className="card-top">
+                    <div className="ca-identity">
+                        <div className="ca-icon"><Clock size={24} /></div>
+                        <div>
+                            <h3>{activeCa?.tenCa || 'Đang chờ ca mới'}</h3>
+                            <p><Calendar size={14} /> {activeCa?.ngayThang || '---'}</p>
+                        </div>
+                    </div>
+                    <div className="ca-actions">
+                        <button className="btn-detail-ghost" onClick={() => setShowDetail(true)}>
+                            Xem chi tiết <ChevronRight size={18} />
+                        </button>
                     </div>
                 </div>
 
-                <div className="ca-actions">
-                    <button className="close-shift-btn" onClick={handleCloseCa} disabled={activeCa?.trangThai === 'Đóng'}>
-                        Đóng ca
-                    </button>
-                    <button className="detail-btn" onClick={() => setShowDetail(true)}>
-                        Chi tiết ca
+                <div className="ca-info-grid">
+                    <div className="info-box">
+                        <label><Tag size={14}/> Mã ca</label>
+                        <span>{activeCa?.maCa || '---'}</span>
+                    </div>
+                    <div className="info-box">
+                        <label><User size={14}/> Nhân viên</label>
+                        <span>{activeCa?.maNhanVien || 'N/A'}</span>
+                    </div>
+                    <div className="info-box">
+                        <label><Clock size={14}/> Bắt đầu lúc</label>
+                        <span>{activeCa?.gioMoCa?.split('.')[0] || '---'}</span>
+                    </div>
+                    <div className="info-box highlight">
+                        <label><Wallet size={14}/> Tiền đầu ca</label>
+                        <span>{formatCurrency(activeCa?.soTienKet)}</span>
+                    </div>
+                </div>
+
+                <div className="card-footer">
+                    <button className="btn-close-ca" onClick={handleCloseCa} disabled={!activeCa}>
+                        <ArrowRightCircle size={18} /> KẾT THÚC VÀ ĐÓNG CA
                     </button>
                 </div>
             </div>
 
-            {/* Tabs và danh sách hóa đơn bên dưới giữ nguyên... */}
-            <div className="ca-tabs">
-                <button className={tab === 'orders' ? 'tab-button active' : 'tab-button'} onClick={() => setTab('orders')}>
-                    Hóa đơn trong ca
-                </button>
-            </div>
+            {/* DANH SÁCH GIAO DỊCH TRONG CA */}
+            <section className="transactions-section">
+                <div className="section-header">
+                    <div className="tab-group">
+                        <button className={`tab-btn active`}>
+                            <Receipt size={18} /> Hóa đơn đã thanh toán
+                        </button>
+                    </div>
+                    <span className="count-badge">{filteredHoaDons.length} Bill</span>
+                </div>
 
-            <div className="order-list">
-                {filteredHoaDons.length === 0 ? (
-                    <div className="empty-state">Chưa có hóa đơn trong ca này.</div>
-                ) : (
-                    filteredHoaDons.map((order) => (
-                        <div key={order.id || order.maHoaDon || order.soHoaDon} className="order-card" onClick={() => setSelectedOrder(order)}>
-                            <div className="order-card-header">
-                                <strong>{order.maHoaDon || order.id || 'Hóa đơn'}</strong>
-                                <span>{formatCurrency(order.tongTien || order.tongHoaDon)}</span>
-                            </div>
-                            <div className="order-row">
-                                <span>Bàn: {getOrderTableName(order)}</span>
-                                <span className="order-date">{formatDateTime(order.thoiGianVao || order.gioVao || order.createdAt || order.ngayThang)}</span>
-                            </div>
-                            <div className="order-row">
-                                <span>Thanh toán: {order.phuongThucThanhToan || order.phuongThuc || order.paymentMethod || 'Tiền mặt'}</span>
-                                <span>{order.trangThai || order.status || 'Hoàn tất'}</span>
-                            </div>
+                <div className="order-grid">
+                    {filteredHoaDons.length === 0 ? (
+                        <div className="empty-orders">
+                            <AlertCircle size={40} color="#94a3b8" />
+                            <p>Chưa có giao dịch nào được ghi nhận.</p>
                         </div>
-                    ))
-                )}
-            </div>
+                    ) : (
+                        filteredHoaDons.map((order) => (
+                            <div key={order.maHoaDon} className="modern-order-card" onClick={() => setSelectedOrder(order)}>
+                                <div className="order-main">
+                                    <div className="order-id">
+                                        <strong>{order.maHoaDon}</strong>
+                                        <span>{getOrderTableName(order)}</span>
+                                    </div>
+                                    <div className="order-amount">
+                                        {formatCurrency(order.tongTien)}
+                                    </div>
+                                </div>
+                                <div className="order-details">
+                                    <span className="pay-method">{order.phuongThucThanhToan}</span>
+                                    <span className="order-time">{order.thoiGianVao?.split('.')[0]}</span>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </section>
         </div>
     );
 };

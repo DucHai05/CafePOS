@@ -16,7 +16,7 @@ const ReceiptModal = ({
         <div className="modal-overlay">
             <div className="receipt-paper">
                 <div className="receipt-header"><h2>PHIẾU TẠM TÍNH</h2></div>
-                
+                <div className="receipt-body">
                 <div className="receipt-info">
                     <div className="info-row">
                         <span>Mã HD: <strong>#HAI{Date.now().toString().slice(-5)}</strong></span>
@@ -99,7 +99,6 @@ const ReceiptModal = ({
                     {paymentMethod === 'TRANSFER' && (
                         <div className="qr-placeholder" style={{ animation: 'fadeIn 0.3s ease' }}>
                             <img src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=STK_HAI_BANK_AMOUNT_${totalAmount}`} alt="QR" />
-                            <p style={{ fontSize: '0.7rem', color: '#666' }}>Quét mã để chuyển khoản</p>
                         </div>
                     )}
                     <p>SABO COFFEE</p>
@@ -110,6 +109,7 @@ const ReceiptModal = ({
                     <button className="btn-print" onClick={() => onConfirm(paymentMethod)}>XÁC NHẬN THANH TOÁN</button>
                     <button className="btn-close" onClick={onClose}>QUAY LẠI</button>
                 </div>
+              </div>
             </div>
         </div>
     );

@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { 
+  Map, 
+  Plus, 
+  Edit3, 
+  Trash2, 
+  RotateCcw, 
+  CheckCircle2, 
+  AlertCircle,
+  Layers,
+  ChevronRight
+} from 'lucide-react';
 import './KhuVucManager.css';
 
 const API_URL = 'http://localhost:8083/api/khuvuc';
@@ -13,8 +24,6 @@ const KhuVucManager = ({ onSelectKhuVuc }) => {
         trangThai: 'Sẵn sàng'
     });
     const [isEditing, setIsEditing] = useState(false);
-
-    // Thêm State để quản lý thông báo lỗi và thành công
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);
 
@@ -27,74 +36,60 @@ const KhuVucManager = ({ onSelectKhuVuc }) => {
             const response = await axios.get(API_URL);
             setKhuVucs(response.data);
         } catch (error) {
-            console.error("Lỗi khi tải danh sách khu vực", error);
-            showMessage("Không thể kết nối với máy chủ để tải dữ liệu!", true);
+            showMessage("Không thể tải danh sách khu vực", true);
         }
     };
 
-    // Hàm hiển thị thông báo trong 3 giây rồi tự tắt
     const showMessage = (msg, error = false) => {
         setMessage(msg);
         setIsError(error);
-        setTimeout(() => setMessage(''), 3000); // Tự ẩn sau 3s
+        setTimeout(() => setMessage(''), 3000);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setMessage(''); // Reset thông báo cũ
-
-        if (isEditing) {
-            return;
-        }
-
-        // 1. BẮT LỖI FRONTEND: Kiểm tra xem người dùng có nhập toàn dấu cách không
+        if (isEditing) return;
         if (!formData.maKhuVuc.trim() || !formData.tenKhuVuc.trim()) {
-            showMessage("Mã và Tên khu vực không được để trống!", true);
-            return; // Dừng lại, không gọi API
+            showMessage("Mã và Tên không được để trống", true);
+            return;
         }
 
         try {
             await axios.post(API_URL, formData);
-            showMessage("Thêm khu vực mới thành công!", false);
+            showMessage("Thêm khu vực mới thành công");
             fetchKhuVucs();
             handleResetSelection();
         } catch (error) {
-            // 2. BẮT LỖI BACKEND
-            console.error("Chi tiết lỗi:", error);
-
-            if (error.response) {
-                if (error.response.status === 500 || error.response.status === 409) {
-                    showMessage("Lỗi: Mã Khu Vực này đã tồn tại!", true);
-                } else {
-                    showMessage(`Lỗi từ máy chủ: ${error.response.status}`, true);
-                }
-            } else if (error.request) {
-                showMessage("Không thể kết nối đến máy chủ!", true);
-            } else {
-                showMessage("Lỗi không xác định: " + error.message, true);
-            }
+            showMessage("Mã khu vực này đã tồn tại!", true);
         }
     };
 
-    const handleDelete = async (id, resetAfter = false) => {
-        if (window.confirm("Bạn có chắc muốn xoá khu vực này cùng tất cả bàn bên trong?")) {
+    const handleUpdate = async () => {
+        if (!isEditing || !formData.tenKhuVuc.trim()) {
+            showMessage("Tên khu vực không được để trống", true);
+            return;
+        }
+        try {
+            await axios.put(`${API_URL}/${formData.maKhuVuc}`, formData);
+            showMessage("Cập nhật thành công");
+            fetchKhuVucs();
+            setSelectedKhuVuc({ ...selectedKhuVuc, ...formData });
+        } catch (error) {
+            showMessage("Lỗi cập nhật dữ liệu", true);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Xóa khu vực này sẽ xóa toàn bộ bàn bên trong. Tiếp tục?")) {
             try {
                 await axios.delete(`${API_URL}/${id}`);
                 fetchKhuVucs();
-                showMessage("Đã xóa khu vực thành công!", false);
-                if (resetAfter) {
-                    handleResetSelection();
-                }
+                showMessage("Đã xóa khu vực");
+                handleResetSelection();
             } catch (error) {
-                showMessage("Khu vực chứa bàn đang hoạt động không thể xóa!", true);
+                showMessage("Khu vực đang vận hành không thể xóa", true);
             }
         }
-    };
-
-    const handleEdit = (kv) => {
-        setFormData(kv);
-        setIsEditing(true);
-        setMessage(''); // Xóa thông báo khi bắt đầu sửa
     };
 
     const handleSelectKhuVuc = (kv) => {
@@ -105,7 +100,6 @@ const KhuVucManager = ({ onSelectKhuVuc }) => {
         });
         setIsEditing(true);
         setSelectedKhuVuc(kv);
-        setMessage('');
         if (onSelectKhuVuc) onSelectKhuVuc(kv);
     };
 
@@ -113,84 +107,55 @@ const KhuVucManager = ({ onSelectKhuVuc }) => {
         setSelectedKhuVuc(null);
         setFormData({ maKhuVuc: '', tenKhuVuc: '', trangThai: 'Sẵn sàng' });
         setIsEditing(false);
-        setMessage('');
         if (onSelectKhuVuc) onSelectKhuVuc(null);
     };
 
-    const handleUpdate = async () => {
-        if (!isEditing) return;
-        if (!formData.tenKhuVuc.trim()) {
-            showMessage("Tên khu vực không được để trống!", true);
-            return;
-        }
-
-        try {
-            await axios.put(`${API_URL}/${formData.maKhuVuc}`, formData);
-            showMessage("Cập nhật khu vực thành công!", false);
-            fetchKhuVucs();
-            setSelectedKhuVuc({ ...selectedKhuVuc, ...formData });
-        } catch (error) {
-            console.error("Chi tiết lỗi:", error);
-            if (error.response) {
-                showMessage(`Lỗi từ máy chủ: ${error.response.status}`, true);
-            } else if (error.request) {
-                showMessage("Không thể kết nối đến máy chủ!", true);
-            } else {
-                showMessage("Lỗi không xác định: " + error.message, true);
-            }
-        }
-    };
-
-    const handleCancelEdit = () => {
-        handleResetSelection();
-    };
-
     return (
-        <div className="khuvuc-container">
-            <div className="khuvuc-header">
-                <h2>Quản Lý Khu Vực</h2>
-            </div>
+        <div className="kv-manager-wrapper">
+            <header className="kv-header">
+                <div className="kv-header-info">
+                    <h1>Thiết lập Khu vực</h1>
+                    <p>Quản lý các phân khu không gian trong cửa hàng</p>
+                </div>
+            </header>
 
-            {/* HIỂN THỊ THÔNG BÁO */}
+            {/* MESSAGE TOAST */}
             {message && (
-                <div className={`message ${isError ? 'error' : 'success'}`}>
-                    <span>{isError ? '⚠️' : '✅'}</span>
-                    <span>{message}</span>
+                <div className={`kv-toast ${isError ? 'error' : 'success'}`}>
+                    {isError ? <AlertCircle size={18} /> : <CheckCircle2 size={18} />}
+                    {message}
                 </div>
             )}
 
-            {/* Form Khu Vực */}
-            <div className="form-container">
-                <h3 className="form-title">{isEditing ? 'Chỉnh sửa khu vực' : 'Thêm khu vực mới'}</h3>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-grid">
-                        <div className="form-group">
+            {/* FORM SECTION */}
+            <div className="kv-form-card">
+                <div className="kv-form-header">
+                    <Layers size={20} />
+                    <h3>{isEditing ? 'Chỉnh sửa thông tin' : 'Tạo khu vực mới'}</h3>
+                </div>
+                <form onSubmit={handleSubmit} className="kv-form">
+                    <div className="kv-input-grid">
+                        <div className="kv-input-group">
                             <label>Mã khu vực</label>
                             <input
-                                type="text"
-                                className="form-input"
-                                placeholder="Nhập mã"
+                                type="text" placeholder="Ví dụ: KV01"
                                 value={formData.maKhuVuc}
                                 onChange={(e) => setFormData({ ...formData, maKhuVuc: e.target.value })}
-                                disabled={isEditing}
-                                required
+                                disabled={isEditing} required
                             />
                         </div>
-                        <div className="form-group">
+                        <div className="kv-input-group">
                             <label>Tên khu vực</label>
                             <input
-                                type="text"
-                                className="form-input"
-                                placeholder="Nhập tên"
+                                type="text" placeholder="Ví dụ: Tầng trệt"
                                 value={formData.tenKhuVuc}
                                 onChange={(e) => setFormData({ ...formData, tenKhuVuc: e.target.value })}
                                 required
                             />
                         </div>
-                        <div className="form-group">
+                        <div className="kv-input-group">
                             <label>Trạng thái</label>
                             <select
-                                className="form-select"
                                 value={formData.trangThai}
                                 onChange={(e) => setFormData({ ...formData, trangThai: e.target.value })}
                             >
@@ -200,43 +165,53 @@ const KhuVucManager = ({ onSelectKhuVuc }) => {
                             </select>
                         </div>
                     </div>
-                    <div className="form-actions">
-                        <button type="submit" className="form-button btn-add" disabled={isEditing}>
-                            Thêm mới
-                        </button>
-                        <button type="button" className="form-button btn-update" onClick={handleUpdate} disabled={!isEditing}>
-                            Cập nhật
-                        </button>
-                        <button type="button" className="form-button btn-delete" onClick={() => handleDelete(formData.maKhuVuc, true)} disabled={!isEditing}>
-                            Xóa
-                        </button>
-                        {isEditing && (
-                            <button type="button" className="form-button btn-back" onClick={handleCancelEdit}>
-                                Quay lại
+                    
+                    <div className="kv-form-actions">
+                        {!isEditing ? (
+                            <button type="submit" className="btn-kv-primary">
+                                <Plus size={18} /> Thêm mới
                             </button>
+                        ) : (
+                            <>
+                                <button type="button" className="btn-kv-update" onClick={handleUpdate}>
+                                    <Edit3 size={18} /> Lưu cập nhật
+                                </button>
+                                <button type="button" className="btn-kv-delete" onClick={() => handleDelete(formData.maKhuVuc)}>
+                                    <Trash2 size={18} /> Xóa
+                                </button>
+                                <button type="button" className="btn-kv-cancel" onClick={handleResetSelection}>
+                                    <RotateCcw size={18} /> Hủy
+                                </button>
+                            </>
                         )}
                     </div>
                 </form>
             </div>
 
-            {/* Danh sách Khu Vực (Grid 3 thẻ/hàng, Hình vuông) */}
-            <div className="khuvuc-card-container">
+            {/* CARD GRID */}
+            <div className="kv-card-grid">
                 {khuVucs.length === 0 ? (
-                    <div className="empty-state">
-                        <p>Chưa có khu vực nào.</p>
+                    <div className="kv-empty-state">
+                        <Map size={48} />
+                        <p>Chưa có khu vực nào được tạo.</p>
                     </div>
                 ) : (
                     khuVucs.map(kv => (
                         <div
                             key={kv.maKhuVuc}
-                            className={`khuvuc-card ${selectedKhuVuc?.maKhuVuc === kv.maKhuVuc ? 'selected' : ''}`}
+                            className={`kv-item-card ${selectedKhuVuc?.maKhuVuc === kv.maKhuVuc ? 'selected' : ''}`}
                             onClick={() => handleSelectKhuVuc(kv)}
                         >
-                            <h4 className="card-title">{kv.tenKhuVuc}</h4>
-                            <p className="card-code">{kv.maKhuVuc}</p>
-                            <div className={`card-status ${kv.trangThai === 'Sẵn sàng' ? 'status-ready' :
-                                kv.trangThai === 'Bảo trì' ? 'status-maintenance' : 'status-paused'}`}>
-                                <span>●</span> {kv.trangThai}
+                            <div className="kv-card-content">
+                                <span className="kv-code">{kv.maKhuVuc}</span>
+                                <h4 className="kv-name">{kv.tenKhuVuc}</h4>
+                                <div className={`kv-status-pill ${kv.trangThai === 'Sẵn sàng' ? 'ready' : kv.trangThai === 'Bảo trì' ? 'mainte' : 'pause'}`}>
+                                    <span className="kv-dot"></span>
+                                    {kv.trangThai}
+                                </div>
+                            </div>
+                            <div className="kv-card-arrow">
+                                <ChevronRight size={20} />
                             </div>
                         </div>
                     ))

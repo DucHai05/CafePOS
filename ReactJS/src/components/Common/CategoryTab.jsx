@@ -1,4 +1,5 @@
 import React from 'react';
+import '../CommonCSS/categoryTab.css';
 
 const CategoryTab = ({ categories, activeId, onSelect }) => {
     return (

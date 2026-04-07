@@ -1,5 +1,10 @@
 import React from 'react';
-import CartItem from './CartItem';
+
+// 1. CartItem.jsx nằm ngay cùng thư mục với CartList.jsx nên dùng ./
+import CartItem from './CartItem.jsx'; 
+
+// 2. PHẢI DÙNG ../ ĐỂ LÙI RA NGOÀI rồi mới vào thư mục CSS được
+import '../CommonCSS/cartList.css';
 
 const CartList = ({ cart, onRemoveItem, onItemClick, onUpdateQty }) => {
     if (cart.length === 0) {

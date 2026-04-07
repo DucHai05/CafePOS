@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import '../CommonCSS/OrderDropdown.css';
+import { Tag, Layers, ArrowLeftRight } from 'lucide-react'; // Sử dụng Lucide icon cho Pro
+import '../CommonCSS/orderDropdown.css';
 
 const OrderDropdown = ({ 
     show, 
@@ -10,7 +11,6 @@ const OrderDropdown = ({
 }) => {
     const dropdownRef = useRef(null);
 
-    // Xử lý click ra ngoài menu thì tự đóng
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -28,13 +28,13 @@ const OrderDropdown = ({
     return (
         <div className="dropdown-menu" ref={dropdownRef}>
             <button onClick={() => { onOpenPromo(); onClose(); }}>
-                <i className="fa-tag"></i> Khuyến mãi
+                <Tag size={16} /> <span>Khuyến mãi</span>
             </button>
             <button onClick={() => { onPrintKitchen(); onClose(); }}>
-                <i className="fa-print"></i> Gộp bàn
+                <Layers size={16} /> <span>Gộp bàn</span>
             </button>
             <button onClick={() => { onOpenOrderNote(); onClose(); }}>
-                <i className="fa-sticky-note"></i> Chuyển bàn
+                <ArrowLeftRight size={16} /> <span>Chuyển bàn</span>
             </button>
         </div>
     );

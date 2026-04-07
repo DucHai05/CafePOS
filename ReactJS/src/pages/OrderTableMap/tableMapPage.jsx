@@ -5,21 +5,20 @@ import TableCard from '../../components/TableCard/TableCard';
 import CategoryTab from '../../components/Common/CategoryTab';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
+import { Layout, Info } from 'lucide-react'; // Icon cho sinh động
 import './tableMapPage.css';
 
 const TableMapPage = () => {
     const [tables, setTables] = useState([]); 
-    const [categories, setCategories] = useState([{ id: 'ALL', name: 'Tất cả' }]); // State cho khu vực
+    const [categories, setCategories] = useState([{ id: 'ALL', name: 'Tất cả khu vực' }]); 
     const [activeCategory, setActiveCategory] = useState('ALL');
     const navigate = useNavigate();
 
-    // --- 1. KẾT NỐI REAL-TIME (WEBSOCKET) ---
+    // --- 1. KẾT NỐI REAL-TIME ---
     useEffect(() => {
-        // Lưu ý: Kiểm tra port 8083 hoặc 8081 cho đúng với Backend của bạn
         const socket = new SockJS('http://localhost:8083/ws-coffee');
         const stompClient = Stomp.over(socket);
-        stompClient.debug = () => {}; // Tắt log rác
-
+        stompClient.debug = () => {}; 
         stompClient.connect({}, () => {
             stompClient.subscribe('/topic/tables', (message) => {
                 const maBanVuaThanhToan = message.body;
@@ -28,71 +27,73 @@ const TableMapPage = () => {
                 ));
             });
         });
-
         return () => { if(stompClient) stompClient.disconnect(); };
     }, []);
 
-    // --- 2. LẤY DỮ LIỆU BÀN ---
+    // --- 2. LẤY DỮ LIỆU ---
     useEffect(() => {
+        // Lấy bàn
         tableApi.getTables()
             .then(res => setTables(res.data))
-            .catch(err => console.error("Lỗi lấy bàn:", err));
-    }, []);
+            .catch(err => console.error(err));
 
-    // --- 3. LẤY DỮ LIỆU KHU VỰC ---
-    useEffect(() => {
+        // Lấy khu vực
         tableApi.getKhuVuc()
             .then(res => {
-                // Giả sử API trả về mảng [{maKhuVuc: 'KV1', tenKhuVuc: 'Tầng 1'}, ...]
                 const apiCategories = res.data.map(kv => ({
-                    id: kv.maKhuVuc, // Map maKhuVuc vào id
-                    name: kv.tenKhuVuc // Map tenKhuVuc vào name
+                    id: kv.maKhuVuc,
+                    name: kv.tenKhuVuc
                 }));
-                
-                // Gộp với option "Tất cả" mặc định
-                setCategories([{ id: 'ALL', name: 'Tất cả' }, ...apiCategories]);
+                setCategories([{ id: 'ALL', name: 'Tất cả khu vực' }, ...apiCategories]);
             })
-            .catch(err => console.error("Lỗi lấy khu vực:", err));
+            .catch(err => console.error(err));
     }, []);
 
-    // --- 4. XỬ LÝ CLICK ---
-    const handleTableClick = (table) => {
-        navigate(`/order/${table.maBan}`);
-    };
+    const handleTableClick = (table) => navigate(`/order/${table.maBan}`);
 
-    // --- 5. LOGIC LỌC BÀN THEO KHU VỰC ---
     const filteredTables = tables.filter(t => {
-        // 1. Nếu chọn "Tất cả", cho qua luôn
         if (activeCategory === 'ALL') return true;
-
         const tableKV = t.maKhuVuc || t.khuVuc?.maKhuVuc || t.makhuvuc;
-
-        // 3. So sánh sau khi đã xóa khoảng trắng (trim)
         return String(tableKV || "").trim() === String(activeCategory || "").trim();
     });
 
-
     return (
-        <div className="table-grid-container" style={{ padding: '20px' }}>
-            <h2 style={{ marginBottom: '20px' }}>Sơ đồ bàn</h2>
-            
-            {/* Truyền categories từ State vào đây */}
-            <CategoryTab 
-                categories={categories} 
-                activeId={activeCategory} 
-                onSelect={setActiveCategory} 
-            />
+        <div className="table-map-wrapper">
+            <header className="map-header">
+                <div className="header-info">
+                    <h1>Sơ đồ bàn</h1>
+                    <p>Trạng thái phục vụ thời gian thực</p>
+                </div>
+                <div className="map-legend">
+                    <div className="legend-item"><span className="dot empty"></span> Trống</div>
+                    <div className="legend-item"><span className="dot busy"></span> Có khách</div>
+                    <div className="legend-item"><span className="dot pending"></span> Chờ thanh toán</div>
+                </div>
+            </header>
 
+            <div className="filter-section">
+                <CategoryTab 
+                    categories={categories} 
+                    activeId={activeCategory} 
+                    onSelect={setActiveCategory} 
+                />
+            </div>
 
-
-            <div className="table-grid">
-                {filteredTables.map(item => (
-                    <TableCard
-                        key={item.maBan}
-                        table={item}
-                        onClick={() => handleTableClick(item)}
-                    />
-                ))}
+            <div className="table-grid-modern">
+                {filteredTables.length === 0 ? (
+                    <div className="empty-state-map">
+                        <Layout size={48} color="#cbd5e1" />
+                        <p>Khu vực này hiện chưa có bàn nào được thiết lập.</p>
+                    </div>
+                ) : (
+                    filteredTables.map(item => (
+                        <TableCard
+                            key={item.maBan}
+                            table={item}
+                            onClick={() => handleTableClick(item)}
+                        />
+                    ))
+                )}
             </div>
         </div>
     );

@@ -1,0 +1,75 @@
+/* --- FIX DỨT ĐIỂM: GIỎ HÀNG 2 CỘT - 2 HÀNG --- */
+.cart-footer {
+  padding: 20px;
+  background: #ffffff;
+  border-top: 1px solid var(--slate-100);
+  margin-top: auto;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0 4px;
+}
+
+.total-price {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--indigo-600);
+}
+
+/* Lưới 2x2 - Ép chết khung */
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Chia đôi bằng chẹn */
+  grid-template-rows: 50px 50px;   /* Ép 2 hàng, mỗi hàng cao 50px */
+  gap: 10px;
+  width: 100%;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  /* Ép màu nền hiện ra, không để bị trong suốt */
+}
+
+/* Nút THANH TOÁN - Hàng 1 bên phải */
+.action-btn.payment {
+  background: var(--indigo-600) !important;
+  color: white !important;
+}
+
+/* Nút XÁC NHẬN - Hàng 1 bên trái */
+.action-btn.confirm {
+  background: #e0e7ff !important;
+  color: var(--indigo-600) !important;
+}
+
+/* Nút GỘP BÀN - Hàng 2 bên trái */
+.action-btn.merge {
+  background: #f1f5f9 !important;
+  color: var(--slate-600) !important;
+}
+
+/* Nút HỦY ĐƠN - Hàng 2 bên phải */
+.action-btn.delete {
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+}
+
+.action-btn:hover {
+  filter: brightness(0.95);
+  transform: translateY(-2px);
+}

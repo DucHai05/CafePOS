@@ -1,5 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { 
+  BarChart3, 
+  Calendar, 
+  ChevronRight, 
+  CreditCard, 
+  Banknote, 
+  History, 
+  Filter, 
+  RefreshCcw,
+  ArrowUpRight,
+  User,
+  Clock,
+  LayoutDashboard
+} from 'lucide-react';
 import DoanhThuDetail from './DoanhThuDetail';
 import './DoanhThuList.css';
 
@@ -17,11 +31,10 @@ const DoanhThuManager = () => {
         fetchData();
     }, []);
 
-const fetchData = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             setError(null);
-
             const [doanhThuResponse, caResponse] = await Promise.all([
                 axios.get(API_URL_DOANHTHU),
                 axios.get(API_URL_CA)
@@ -29,11 +42,8 @@ const fetchData = async () => {
 
             const doanhThuData = doanhThuResponse.data || [];
             const caData = caResponse.data || [];
-
             const caMap = {};
-            caData.forEach(ca => {
-                if (ca.maCa) caMap[ca.maCa] = ca;
-            });
+            caData.forEach(ca => { if (ca.maCa) caMap[ca.maCa] = ca; });
 
             const enrichedDoanhThus = doanhThuData.map(dt => {
                 const matchedCa = caMap[dt.maCa] || (dt.ca && caMap[dt.ca.maCa]) || null;
@@ -44,173 +54,152 @@ const fetchData = async () => {
                 };
             });
 
-            // ✅ DI CHUYỂN ĐOẠN LOG VÀO ĐÂY (Bên trong try block)
-            console.log(">>> [DEBUG] Dữ liệu Doanh Thu gốc từ API (8084):", doanhThuData);
-            
-            console.table(enrichedDoanhThus.map(dt => ({
-                "Mã Ca": dt.maCa,
-                "Tiền Mặt": dt.tienMat,
-                "Chuyển Khoản": dt.tienCK,
-                "Tổng Cộng": dt.tongDoanhThu
-            })));
-            // -------------------------------------------
-
             setDoanhThus(enrichedDoanhThus);
         } catch (error) {
-            console.error('Lỗi khi tải dữ liệu doanh thu:', error);
-            setError('Không thể tải dữ liệu doanh thu. Vui lòng thử lại sau.');
+            setError('Không thể kết nối đến máy chủ doanh thu.');
         } finally {
             setLoading(false);
         }
     };
-    
 
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
-    };
+    const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
 
-    const formatDateTime = (dateTimeStr) => {
-        if (!dateTimeStr) return '-';
-        const date = new Date(dateTimeStr);
-        if (isNaN(date.getTime())) {
-            return dateTimeStr;
-        }
-        return date.toLocaleString('vi-VN', {
-            day: '2-digit',
-            month: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        });
-    };
-
-    const getDoanhThuDate = (doanhThu) => {
-        const dateValue = doanhThu.ca?.gioMoCa || doanhThu.gioMoCa || doanhThu.gioMo || doanhThu.ca?.gioMo || doanhThu.ca?.gioBatDau || doanhThu.ca?.ngayThang;
-        const parsed = new Date(dateValue);
+    const getDoanhThuDate = (dt) => {
+        const val = dt.ca?.gioMoCa || dt.gioMoCa || dt.ca?.ngayThang || dt.ca?.gioMo || dt.gioMo;
+        if (!val) return null;
+        const parsed = new Date(val);
+        // Nếu ngày không hợp lệ, trả về null để bộ lọc không bị NaN
         return isNaN(parsed.getTime()) ? null : parsed;
     };
 
-    const filterDoanhThus = (list) => {
-        if (filterDays === 'all') return list;
+    const filteredList = useMemo(() => {
+        if (filterDays === 'all') return doanhThus;
+        
         const limit = Number(filterDays);
         const now = new Date();
-        return list.filter((dt) => {
-            const recordDate = getDoanhThuDate(dt);
-            if (!recordDate) return true;
-            const diffDays = (now - recordDate) / (1000 * 60 * 60 * 24);
+        
+        return doanhThus.filter((dt) => {
+            const date = getDoanhThuDate(dt);
+            // Nếu không có ngày hoặc ngày lỗi, giữ lại để không bị mất data
+            if (!date) return true; 
+            
+            const diffDays = (now - date) / (1000 * 60 * 60 * 24);
             return diffDays <= limit;
         });
-    };
+    }, [doanhThus, filterDays]);
 
-    if (selectedDoanhThu) {
-        return (
-            <DoanhThuDetail
-                doanhThu={selectedDoanhThu}
-                onBack={() => setSelectedDoanhThu(null)}
-            />
-        );
-    }
+    // Tính tổng số liệu cho phần Stats đầu trang
+    const stats = useMemo(() => {
+        return filteredList.reduce((acc, curr) => {
+            acc.total += curr.tongDoanhThu;
+            acc.cash += Number(curr.tienMat || 0);
+            acc.transfer += Number(curr.tienCK || 0);
+            return acc;
+        }, { total: 0, cash: 0, transfer: 0 });
+    }, [filteredList]);
 
-    if (loading) {
-        return (
-            <div className="doanhthu-container">
-                <div className="loading">Đang tải dữ liệu doanh thu...</div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="doanhthu-container">
-                <div className="error-message">{error}</div>
-                <button className="retry-btn" onClick={fetchData}>
-                    Thử lại
-                </button>
-            </div>
-        );
-    }
+    if (selectedDoanhThu) return <DoanhThuDetail doanhThu={selectedDoanhThu} onBack={() => setSelectedDoanhThu(null)} />;
 
     return (
         <div className="doanhthu-container">
-            <div className="doanhthu-header">
-                <h1>Quản lý doanh thu</h1>
-                <div className="filter-group">
-                    <label htmlFor="filterDays">Lọc:</label>
-                    <select
-                        id="filterDays"
-                        className="filter-select"
-                        value={filterDays}
-                        onChange={(e) => setFilterDays(e.target.value)}
-                    >
-                        <option value="7">7 ngày gần nhất</option>
-                        <option value="30">30 ngày gần nhất</option>
-                        <option value="90">90 ngày gần nhất</option>
-                        <option value="all">Tất cả</option>
-                    </select>
+            <header className="doanhthu-header">
+                <div className="header-left">
+                    <h1>Quản lý doanh thu</h1>
+                    <p>Lịch sử đối soát và tăng trưởng theo ca làm việc</p>
+                </div>
+                <div className="header-actions">
+                    <div className="filter-box">
+                        <Filter size={18} />
+                        <select value={filterDays} onChange={(e) => setFilterDays(e.target.value)}>
+                            <option value="7">7 ngày qua</option>
+                            <option value="30">30 ngày qua</option>
+                            <option value="all">Tất cả thời gian</option>
+                        </select>
+                    </div>
+                    <button className="refresh-btn" onClick={fetchData}>
+                        <RefreshCcw size={18} /> Làm mới
+                    </button>
+                </div>
+            </header>
+
+            {/* TOP STATS CARDS */}
+            <div className="doanhthu-stats-row">
+                <div className="stat-card primary">
+                    <div className="stat-icon"><BarChart3 size={24}/></div>
+                    <div className="stat-content">
+                        <label>Tổng doanh thu ({filterDays === 'all' ? 'Tất cả' : `${filterDays} ngày`})</label>
+                        <h2>{formatCurrency(stats.total)}</h2>
+                    </div>
+                    <div className="stat-bg-icon"><TrendingUp size={80}/></div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon cash"><Banknote size={24}/></div>
+                    <div className="stat-content">
+                        <label>Tổng Tiền mặt</label>
+                        <h3>{formatCurrency(stats.cash)}</h3>
+                    </div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon transfer"><CreditCard size={24}/></div>
+                    <div className="stat-content">
+                        <label>Tổng Chuyển khoản</label>
+                        <h3>{formatCurrency(stats.transfer)}</h3>
+                    </div>
                 </div>
             </div>
 
+            {/* MAIN GRID */}
             <div className="doanhthu-grid">
-                {doanhThus.length === 0 ? (
+                {loading ? (
+                    <div className="loading-state">Đang tải dữ liệu...</div>
+                ) : filteredList.length === 0 ? (
                     <div className="empty-state">
-                        <h3>Không có dữ liệu doanh thu</h3>
-                        <p>Chưa có ca nào được tạo hoặc có dữ liệu doanh thu.</p>
+                        <History size={48} />
+                        <h3>Không có dữ liệu</h3>
+                        <p>Không tìm thấy bản ghi doanh thu nào trong khoảng thời gian này.</p>
                     </div>
                 ) : (
-                    filterDoanhThus(doanhThus).map((doanhThu) => (
-                        <div
-                            key={doanhThu.maDoanhThu}
-                            className="doanhthu-card"
-                            onClick={() => setSelectedDoanhThu(doanhThu)}
-                        >
-                            <div className="card-header">
-                                <h3>{doanhThu.maDoanhThu}</h3>
-                                <span className="revenue-amount">
-                                    {formatCurrency(doanhThu.tongDoanhThu)}
-                                </span>
+                    filteredList.map((dt) => (
+                        <div key={dt.maDoanhThu} className="doanhthu-card" onClick={() => setSelectedDoanhThu(dt)}>
+                            <div className="card-top">
+                                <div className="id-group">
+                                    <span className="ma-dt">{dt.maDoanhThu}</span>
+                                    <h3>{dt.ca?.tenCa || 'Ca làm việc'}</h3>
+                                </div>
+                                <div className="total-badge">
+                                    {formatCurrency(dt.tongDoanhThu)}
+                                </div>
                             </div>
-
-                            <div className="card-content">
-                                <div className="info-row">
-                                    <span className="label">Mã ca:</span>
-                                    <span className="value">{doanhThu.maCa || doanhThu.ca?.maCa}</span>
+                            
+                            <div className="card-body">
+                                <div className="info-item">
+                                    <User size={14} /> <span>Nhân viên:</span> <strong>{dt.ca?.maNhanVien || '-'}</strong>
+                                </div>
+                                <div className="info-item">
+                                    <Calendar size={14} /> <span>Ngày:</span> <strong>{dt.ca?.ngayThang || '-'}</strong>
+                                </div>
+                                <div className="info-item">
+                                    <Clock size={14} /> <span>Thời gian:</span> 
+                                    <strong>{dt.ca?.gioMoCa?.split('.')[0]} - {dt.ca?.gioDongCa?.split('.')[0] || '...'}</strong>
                                 </div>
 
-                                <div className="info-row">
-                                    <span className="label">Tên ca:</span>
-                                    <span className="value">{doanhThu.ca?.tenCa || doanhThu.tenCa || '-'}</span>
-                                </div>
-
-                                <div className="info-row">
-                                    <span className="label">Giờ mở:</span>
-                                    <span className="value">
-                                        {formatDateTime(doanhThu.ca?.gioMoCa || doanhThu.gioMoCa || doanhThu.gioMo || doanhThu.ca?.gioMo || doanhThu.ca?.gioBatDau)}
-                                    </span>
-                                </div>
-
-                                <div className="info-row">
-                                    <span className="label">Giờ đóng:</span>
-                                    <span className="value">
-                                        {formatDateTime(doanhThu.ca?.gioDongCa || doanhThu.gioDongCa || doanhThu.gioDong || doanhThu.ca?.gioKetThuc)}
-                                    </span>
-                                </div>
-
-                                <div className="revenue-breakdown">
-                                    <div className="revenue-item">
-                                        <span>Tiền mặt:</span>
-                                        <strong>{formatCurrency(doanhThu.tienMat)}</strong>
+                                <div className="method-split">
+                                    <div className="method-item">
+                                        <label>Tiền mặt</label>
+                                        <span>{formatCurrency(dt.tienMat)}</span>
                                     </div>
-                                    <div className="revenue-item">
-                                        <span>Chuyển khoản:</span>
-                                        <strong>{formatCurrency(doanhThu.tienCK)}</strong>
+                                    <div className="method-item">
+                                        <label>Chuyển khoản</label>
+                                        <span>{formatCurrency(dt.tienCK)}</span>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="card-footer">
-                                <span className={`status ${doanhThu.ca?.trangThai === 'Đóng' ? 'closed' : 'open'}`}>
-                                    {doanhThu.ca?.trangThai === 'Đóng' ? '✅ Đã đóng' : '🔄 Đang mở'}
+                                <span className={`status-pill ${dt.ca?.trangThai === 'Đóng' ? 'closed' : 'open'}`}>
+                                    {dt.ca?.trangThai === 'Đóng' ? 'Đã kết toán' : 'Đang vận hành'}
                                 </span>
+                                <span className="view-detail">Chi tiết <ChevronRight size={16} /></span>
                             </div>
                         </div>
                     ))
@@ -219,5 +208,13 @@ const fetchData = async () => {
         </div>
     );
 };
+
+// Helper icon cho trang trí
+const TrendingUp = ({ size }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{opacity: 0.05, position: 'absolute', right: -10, bottom: -10}}>
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+        <polyline points="16 7 22 7 22 13"></polyline>
+    </svg>
+);
 
 export default DoanhThuManager;

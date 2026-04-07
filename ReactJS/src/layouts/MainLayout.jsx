@@ -7,25 +7,24 @@ import {
   Settings, 
   LogOut,
   Bell,
-  Search,
   UserCircle
-} from 'lucide-react'; // Sử dụng thư viện icon lucide-react cho hiện đại
+} from 'lucide-react';
 import './MainLayout.css';
-
+import ladoLogo from '../assets/LADO.png';
 const MainLayout = () => {
   const navigate = useNavigate();
 
   return (
     <div className="pos-app">
-      {/* SIDEBAR */}
       <aside className="pos-sidebar">
         <div className="brand">
-          <div className="logo-box">H</div>
-          <span>HAI POS</span>
+          <div className="logo-box">
+            <img src={ladoLogo} alt="Lado Coffee Logo" className="logo-img" />
+        </div>
         </div>
 
         <nav className="nav-group">
-          <label>VẬN HÀNH</label>
+          <label>Vận hành</label>
           <NavLink to="/dashboard" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
             <LayoutDashboard size={20} /> <span>Tổng quan</span>
           </NavLink>
@@ -35,46 +34,41 @@ const MainLayout = () => {
         </nav>
 
         <nav className="nav-group">
-          <label>QUẢN LÝ</label>
-          <NavLink to="/history" className="nav-item">
-            <History size={20} /> <span>Lịch sử hóa đơn</span>
-          </NavLink>
-          <NavLink to="/discount" className="nav-item">
+          <label>Quản lý</label>
+          <NavLink to="/discount" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
             <ClipboardList size={20} /> <span>Khuyến mãi</span>
           </NavLink>
-          <NavLink to="/table-map" className="nav-item">
-            <ClipboardList size={20} /> <span>Quản lý bàn/ khu vực</span>
+          <NavLink to="/table-map" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+            <TableProperties size={20} /> <span>Bàn & Khu vực</span>
           </NavLink>
-          <NavLink to="/doanh-thu" className="nav-item">
-            <ClipboardList size={20} /> <span>Quản lý doanh thu</span>
+          <NavLink to="/doanh-thu" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+            <ClipboardList size={20} /> <span>Doanh thu</span>
           </NavLink>
-          <NavLink to="/ca" className="nav-item">
-            <ClipboardList size={20} /> <span>Quản lý ca</span>
+          <NavLink to="/ca" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+            <History size={20} /> <span>Ca làm việc</span>
           </NavLink>
-          <NavLink to="/settings" className="nav-item">
+          <NavLink to="/settings" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
             <Settings size={20} /> <span>Cấu hình</span>
           </NavLink>
         </nav>
 
         <div className="sidebar-footer">
           <div className="user-profile">
-            <UserCircle size={32} color="#94a3b8" />
+            <UserCircle size={32} color="#4f46e5" strokeWidth={1.5} />
             <div className="user-meta">
               <p className="user-name">Hải Admin</p>
-              <p className="user-role">Quản lý ca</p>
+              <p className="user-role">Quản lý hệ thống</p>
             </div>
           </div>
           <button className="logout-btn" onClick={() => navigate('/login')}>
-            <LogOut size={18} /> <span>Kết ca</span>
+            <LogOut size={18} /> <span>Kết thúc ca</span>
           </button>
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
+      {/* MAIN CONTENT (GIỮ NGUYÊN) */}
       <main className="pos-main">
         <header className="pos-topbar">
-
-          
           <div className="topbar-actions">
             <div className="status-indicator">
               <span className="dot online"></span>

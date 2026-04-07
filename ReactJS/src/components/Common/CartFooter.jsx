@@ -1,4 +1,5 @@
 import React from 'react';
+import '../CommonCSS/cartFooter.css';
 
 const CartFooter = ({ 
     autoDiscount, 
@@ -36,20 +37,12 @@ const CartFooter = ({
             </div>
 
             {/* Lưới các nút chức năng */}
-            <div className="button-grid">
-                <button className="action-btn confirm" onClick={onConfirm}>
-                    XÁC NHẬN
-                </button>
-                <button className="action-btn payment" onClick={onPayment}>
-                    THANH TOÁN
-                </button>
-                <button  className="action-btn merge" onClick={onMerge}> 
-                    GỘP BÀN
-                </button>
-                <button className="action-btn delete" onClick={onDelete}>
-                    HỦY ĐƠN
-                </button>
-            </div>
+           <div className="button-grid">
+            <button className="action-btn confirm" onClick={onConfirm}>XÁC NHẬN</button>
+            <button className="action-btn payment" onClick={onPayment}>THANH TOÁN</button>
+            <button className="action-btn merge" onClick={onMerge}>GỘP BÀN</button>
+            <button className="action-btn delete" onClick={onDelete}>HỦY ĐƠN</button>
+          </div>
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import '../Promotion/eventPromoGrid.css';
 const EventPromoGrid = ({ data, onEdit, onDelete, onToggle }) => {
   return (
     <div className="event-grid">

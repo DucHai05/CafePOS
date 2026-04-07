@@ -1,4 +1,5 @@
 import React from 'react';
+import '../CommonCSS/promotionModal.css';
 
 const PromotionModal = ({ isOpen, onClose, promos, onSelect }) => {
     // Nếu không mở thì không render gì cả
