@@ -16,9 +16,9 @@ const Dashboard = () => {
 
     // Giả lập dữ liệu Doanh thu & Khuyến mãi
     const stats = [
-        { id: 1, icon: DollarSign, label: 'Doanh thu hôm nay', value: '1,250,000đ', trend: '+15%', color: 'indigo' },
-        { id: 2, icon: ShoppingBag, label: 'Đơn hàng mới', value: '45 đơn', trend: '+8%', color: 'blue' },
-        { id: 3, icon: Ticket, label: 'Voucher đã dùng', value: '12 mã', trend: '-2%', color: 'rose' },
+        { id: 1, icon: DollarSign, label: 'Doanh thu hôm nay', value: '1,250,000,000đ', trend: '+15%', color: 'indigo' },
+        { id: 2, icon: ShoppingBag, label: 'Đơn hàng mới', value: '4500 đơn', trend: '+8%', color: 'blue' },
+        { id: 3, icon: Ticket, label: 'Voucher đã dùng', value: '120 mã', trend: '-2%', color: 'rose' },
         { id: 4, icon: Target, label: 'Hiệu suất mục tiêu', value: '85%', trend: '+5%', color: 'emerald' }
     ];
 

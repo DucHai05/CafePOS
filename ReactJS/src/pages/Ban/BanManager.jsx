@@ -163,7 +163,7 @@ const BanManager = ({ khuVuc }) => {
                 </form>
             </div>
 
-            {/* DATA TABLE CARD */}
+
             <div className="table-card">
                 <table className="modern-table">
                     <thead>
@@ -175,37 +175,45 @@ const BanManager = ({ khuVuc }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {bans.length === 0 ? (
-                            <tr>
-                                <td colSpan="4" className="empty-row">
-                                    Khu vực này hiện chưa có bàn nào.
+                        {bans.map(ban => (
+                            <tr 
+                                key={ban.maBan} 
+                                className="clickable-row" // Thêm class để CSS riêng
+                                onClick={() => {
+                                    setFormData(ban);
+                                    setIsEditing(true);
+                                }}
+                            >
+                                <td className="font-bold">{ban.maBan}</td>
+                                <td>{ban.tenBan}</td>
+                                <td>
+                                    <span className={`badge ${ban.trangThaiBan === 'Hoạt động' ? 'status-active' : 'status-maintenance'}`}>
+                                        <span className="dot"></span>
+                                        {ban.trangThaiBan}
+                                    </span>
+                                </td>
+                                <td className="actions-cell">
+                                    {/* Nút sửa - Không cần stopPropagation vì nó cùng hành động với dòng */}
+                                    <button className="action-btn edit">
+                                        <Pencil size={16} />
+                                    </button>
+                                    
+                                    {/* Nút xóa - BẮT BUỘC có stopPropagation */}
+                                    <button 
+                                        className="action-btn delete"
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Ngăn việc kích hoạt onClick của <tr>
+                                            handleDelete(ban.maBan);
+                                        }}
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
                                 </td>
                             </tr>
-                        ) : (
-                            bans.map(ban => (
-                                <tr key={ban.maBan}>
-                                    <td className="font-bold">{ban.maBan}</td>
-                                    <td>{ban.tenBan}</td>
-                                    <td>
-                                        <span className={`badge ${ban.trangThaiBan === 'Hoạt động' ? 'status-active' : 'status-maintenance'}`}>
-                                            <span className="dot"></span>
-                                            {ban.trangThaiBan}
-                                        </span>
-                                    </td>
-                                    <td className="actions-cell">
-                                        <button onClick={() => { setFormData(ban); setIsEditing(true); }} className="action-btn edit">
-                                            <Pencil size={16} />
-                                        </button>
-                                        <button onClick={() => handleDelete(ban.maBan)} className="action-btn delete">
-                                            <Trash2 size={16} />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
+                        ))}
                     </tbody>
                 </table>
-            </div>
+            </div>  
         </div>
     );
 };

@@ -59,17 +59,18 @@ const PaymentPage = () => {
 
         try {
             const finalMaHD = order?.maHoaDon || maHDTuState;
-            const finalAmount = totalTuState || order?.tongTien;
+            const finalAmount = totalTuState || order?.tongTien; 
+            const finalSubTotal = subTotalTuState || order?.tongTienGoc || 0;
 
             const paymentPayload = {
                 maHoaDon: finalMaHD,
                 maBan: maBan,
                 phuongThucThanhToan: method,
                 maKhuyenMai: manualDiscount?.maKhuyenMai || autoDiscount?.maKhuyenMai || null,
-                tongTienSauKM: totalAmount,
+                tongTienSauKM: finalAmount, // Đã sửa từ totalAmount thành finalAmount                
                 thoiGianThanhToan: new Date().toISOString(),
                 trangThaiThanhToan: 'Paid',
-                tongTienGoc: subTotal,
+                tongTienGoc: finalSubTotal,
                 nhanVienThucHien: 'DucHaii'
             };
 

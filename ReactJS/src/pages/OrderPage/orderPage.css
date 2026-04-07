@@ -141,18 +141,7 @@
   color: var(--slate-600);
 }
 
-/* .cart-footer {
-  padding: 20px;
-  background: white;
-  border-top: 1px solid var(--slate-100);
-  margin-top: auto;
-} */
 
-.button-grid {
-  display: grid;
-  gap: 12px; /* Khoảng cách giữa các nút */
-  width: 100%;
-}
 
 .action-btn {
   display: flex;
@@ -169,7 +158,6 @@
   transition: all 0.2s ease;
   box-sizing: border-box;
 }
-
 
 
 .action-btn:hover {
@@ -195,26 +183,9 @@
 
 .total-price { font-size: 1.5rem; font-weight: 900; color: var(--indigo-600); }
 
-.button-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 cột đều nhau */
-  gap: 10px;
-}
 
-.action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px; /* Chiều cao cố định */
-  border: none;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 0.75rem;
-  cursor: pointer;
-  white-space: nowrap; /* Ngăn chữ nhảy dòng */
-  transition: all 0.2s;
-  text-transform: uppercase;
-}
+
+
 
 
 

@@ -1,6 +1,8 @@
 .manager-wrapper {
-  padding: 8px;
+  padding: 16px; /* Tăng nhẹ padding cho thoáng */
   animation: fadeIn 0.4s ease-out;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header */
@@ -93,40 +95,108 @@
   box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
   transform: translateY(-1px);
 }
+.btn-refresh {
+  background: white;
+  border: 1px solid #e2e8f0;
+  color: var(--slate-600);
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-refresh:hover { background: var(--slate-50); border-color: var(--indigo-600); color: var(--indigo-600); }
+/* Container bao quanh 2 nút Cập nhật và Hủy */
+.form-actions {
+  display: flex;
+  gap: 12px;           /* Tạo khoảng cách 12px giữa 2 nút */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  margin-top: 8px;     /* Khoảng cách nhẹ với lề trên nếu cần */
+}
 
+/* Đảm bảo btn-ghost có kích thước tương đồng để không lệch hàng */
 .btn-ghost {
-  background: none;
+  background: white;   /* Nên để nền trắng thay vì none để che lấp lề nếu bị đè */
   border: 1px solid #e2e8f0;
   color: #64748b;
   padding: 11px 20px;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s;
+  display: flex;       /* Thêm flex để căn icon/chữ bên trong nếu có */
+  align-items: center;
+  height: 46px;        /* Ép cùng chiều cao với btn-primary (11*2 + line-height) */
 }
 
-/* Table Card */
+.btn-ghost:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+/* Card bao ngoài: Bỏ padding để bảng tràn ra sát viền card nhìn sẽ chắc chắn hơn */
 .table-card {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #f1f5f9;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+    display: block !important;
+    overflow: hidden;
+    padding: 0 !important;
+    min-height: auto !important;
+
+    /* THÊM DÒNG NÀY: Để chặn mọi hiệu ứng truyền từ cha hoặc các hiệu ứng mặc định */
+    transition: none !important;
+    transform: none !important;
+    user-select: none; /* Ngăn bôi đen khi nhấn nhanh nhiều lần */
+}
+
+/* Đảm bảo khi nhấn vào card thì nó không được phép biến đổi */
+.table-card:active {
+    transform: none !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Tối ưu dòng có thể nhấn */
+.clickable-row {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: white;
+}
+
+/* Khi di chuột vào dòng: Chỉ đổi màu nhẹ để xác định vùng nhấn */
+.clickable-row:hover {
+    background-color: #f1f5f9 !important; /* Màu xám rất nhạt */
+}
+
+/* Khi nhấn giữ (Active): Tạo cảm giác nút bấm */
+.clickable-row:active {
+    background-color: #e2e8f0;
+    transform: scale(0.998); /* Nhấn lún xuống cực nhẹ */
+}
+
+/* Đảm bảo các ô td có padding vừa phải để không làm bảng quá dài */
+.modern-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .modern-table {
-  width: 100%;
-  border-collapse: collapse;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0 !important;     /* Triệt tiêu margin trên của bảng */
 }
 
 .modern-table th {
-  background: #f8fafc;
-  padding: 16px;
-  text-align: left;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  color: #94a3b8;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+    padding: 12px 16px;           /* Giảm bớt padding th cho gọn */
+    text-align: left;
+    vertical-align: middle;       /* Đảm bảo chữ nằm giữa ô */
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .modern-table td {
@@ -134,7 +204,13 @@
   color: #334155;
   border-bottom: 1px solid #f1f5f9;
 }
-
+.modern-table tbody tr {
+  transition: background-color 0.2s;
+  cursor: pointer; /* Biến chuột thành hình bàn tay */
+}
+.modern-table tbody tr:hover {
+  background-color: #f8fafc; /* Màu nền nhẹ khi di chuột vào */
+}
 .modern-table tr:last-child td { border: none; }
 
 .font-bold { font-weight: 700; color: #1e293b; }
@@ -165,7 +241,7 @@
   gap: 8px;
 }
 
-.action-btn {
+/* .action-btn {
   width: 36px;
   height: 36px;
   display: grid;
@@ -174,13 +250,13 @@
   border-radius: 8px;
   cursor: pointer;
   transition: 0.2s;
-}
-
+} */
+/* 
 .action-btn.edit { background: #eef2ff; color: #4f46e5; }
 .action-btn.edit:hover { background: #4f46e5; color: white; }
 
 .action-btn.delete { background: #fef2f2; color: #ef4444; }
-.action-btn.delete:hover { background: #ef4444; color: white; }
+.action-btn.delete:hover { background: #ef4444; color: white; } */
 
 /* Empty States & Toasts */
 .empty-state {

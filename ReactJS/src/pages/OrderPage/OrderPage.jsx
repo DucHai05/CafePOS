@@ -37,14 +37,25 @@ const OrderPage = () => {
     const [deleteConfirm, setDeleteConfirm] = useState({ open: false, index: null, item: null });
     const [itemsToPrint, setItemsToPrint] = useState([]);
 
-    const subTotal = CartHelpers.calculateSubTotal(cart);
     const [autoDiscount, setAutoDiscount] = useState(null);
     const [manualDiscount, setManualDiscount] = useState(null);
     const [availablePromos, setAvailablePromos] = useState([]);
-    const autoDiscountVal = CartHelpers.calculateDiscountValue(autoDiscount, subTotal);
-    const manualDiscountVal = CartHelpers.calculateDiscountValue(manualDiscount, subTotal);
-    const totalAmount = CartHelpers.calculateFinalTotal(subTotal, autoDiscountVal, manualDiscountVal);
+    const [originalCart, setOriginalCart] = useState([]);
 
+
+    // Khuyen mai
+    const subTotal = React.useMemo(() => 
+        CartHelpers.calculateSubTotal(cart), [cart]);
+
+    const autoDiscountVal = React.useMemo(() => 
+        CartHelpers.calculateDiscountValue(autoDiscount, subTotal), [autoDiscount, subTotal]);
+
+    const manualDiscountVal = React.useMemo(() => 
+        CartHelpers.calculateDiscountValue(manualDiscount, subTotal), [manualDiscount, subTotal]);
+
+    const totalAmount = React.useMemo(() => 
+        CartHelpers.calculateFinalTotal(subTotal, autoDiscountVal, manualDiscountVal), 
+        [subTotal, autoDiscountVal, manualDiscountVal]);
     useEffect(() => {
         const initData = async () => {
             setLoading(true);
@@ -67,6 +78,7 @@ const OrderPage = () => {
                     const data = orderRes.data;
                     let idTuXuLy = data.maHoaDon || data.items[0].maChiTietHD.split('CTHD')[0];
                     setCart(data.items);
+                    setOriginalCart(data.items);
                     setMaHoaDon(idTuXuLy);
                 } else {
                     setCart([]);
@@ -80,7 +92,14 @@ const OrderPage = () => {
         };
         if (maBan) initData();
     }, [maBan]);
-
+    const filteredProducts = React.useMemo(() => {
+            return products
+                .filter(p => activeCategory === 'ALL' || p.loai === activeCategory)
+                .filter(p => 
+                    p.tenSanPham.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                    p.maSanPham.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+        }, [products, activeCategory, searchTerm]);
     const handleConfirmOrder = async (isGoingToPayment = false) => {
         if (cart.length === 0) return null;
         try {
@@ -92,6 +111,7 @@ const OrderPage = () => {
             const res = await orderApi.staffCreate(orderData);
             const newMaHD = res.data.savedHD?.maHoaDon || res.data.maHoaDon || maHoaDon;
             setMaHoaDon(newMaHD);
+            setOriginalCart([...cart]);
             await tableApi.updateTrangThai(maBan, 'PENDING');
 
             if (res.data.printToKitchen?.length > 0) {
@@ -103,13 +123,25 @@ const OrderPage = () => {
             return newMaHD;
         } catch (err) { return null; }
     };
+    const hasCartChanged = () => {
+            if (cart.length !== originalCart.length) return true;
+            return JSON.stringify(cart) !== JSON.stringify(originalCart);
+        };
+        const handleGoToPayment = async () => {
+        const changed = hasCartChanged();
 
-    const handleGoToPayment = async () => {
-        const idMoi = await handleConfirmOrder(true);
-        const finalMaHD = idMoi || maHoaDon;
-        if (finalMaHD) {
+        if (changed) {
+            console.log("🛒 Giỏ hàng có thay đổi -> Lưu rồi mới đi.");
+            const idMoi = await handleConfirmOrder(true);
+            if (idMoi) {
+                navigate(`/payment/${maBan}`, {
+                    state: { maHoaDon: idMoi, cart, maCa: maCaOpen, totalAmount, subTotal, manualDiscount, autoDiscount }
+                });
+            }
+        } else {
+            console.log("⚡ Giỏ hàng khớp DB -> Đi thẳng!");
             navigate(`/payment/${maBan}`, {
-                state: { maHoaDon: finalMaHD, cart, maCa: maCaOpen, totalAmount, subTotal, manualDiscount, autoDiscount }
+                state: { maHoaDon, cart, maCa: maCaOpen, totalAmount, subTotal, manualDiscount, autoDiscount }
             });
         }
     };
@@ -125,7 +157,7 @@ const OrderPage = () => {
     ];
 
     if (loading) return <div className="order-loading">Đang chuẩn bị thực đơn...</div>;
-
+    
     return (
         <div className="order-page-wrapper">
             {/* THỰC ĐƠN BÊN TRÁI */}
@@ -153,10 +185,7 @@ const OrderPage = () => {
 
                 <div className="product-scroll-area">
                     <div className="product-grid-modern">
-                        {products
-                            .filter(p => activeCategory === 'ALL' || p.loai === activeCategory)
-                            .filter(p => p.tenSanPham.toLowerCase().includes(searchTerm.toLowerCase()) || p.maSanPham.toLowerCase().includes(searchTerm.toLowerCase()))
-                            .map(p => (
+                            {filteredProducts.map(p => (
                                 <PhanLoaiCard 
                                     key={p.maSanPham}
                                     title={p.tenSanPham}

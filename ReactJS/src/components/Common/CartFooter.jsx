@@ -14,7 +14,6 @@ const CartFooter = ({
 }) => {
     return (
         <div className="cart-footer">
-            {/* Hiển thị giảm giá tự động */}
             {autoDiscountVal > 0 && (
                 <div className="discount-summary auto">
                     <span>✨ Ưu đãi ({autoDiscount?.tenKhuyenMai}):</span>
@@ -43,6 +42,7 @@ const CartFooter = ({
             <button className="action-btn merge" onClick={onMerge}>GỘP BÀN</button>
             <button className="action-btn delete" onClick={onDelete}>HỦY ĐƠN</button>
           </div>
+          
         </div>
     );
 };
