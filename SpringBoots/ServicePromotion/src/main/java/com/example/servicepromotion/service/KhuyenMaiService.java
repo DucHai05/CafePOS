@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,13 +39,21 @@ public class KhuyenMaiService {
     }
 
     // 3. THÊM MỚI
-    int index = 1;
+
     @Transactional
     public void savePromotion(KhuyenMaiDTO dto) {
         KhuyenMai km = new KhuyenMai();
-        String maKhuyenMai = "KM" + (index++);
-        // Để null để SQL tự sinh ID nếu là Identity, hoặc set nếu Hải nhập tay
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+        String timestamp = LocalDateTime.now().format(formatter);
+
+        // 2. Tạo mã KM: KM + chuỗi thời gian
+        String maKhuyenMai = "KM" + timestamp;
+
+        // Gán vào entity
         km.setMaKhuyenMai(maKhuyenMai);
+
         mapDtoToEntity(dto, km);
 
         KhuyenMai savedKM = kmRepo.save(km);
@@ -98,7 +108,7 @@ public class KhuyenMaiService {
                 config.setKhuyenMai(km);
                 config.setLoaiDoiTuong(cDto.getLoaiDoiTuong());
                 config.setGiaTriDonToiThieu(cDto.getGiaTriDonToiThieu());
-                config.setApDungChoMon(cDto.getAp_dung_cho_mon());
+                config.setApDungChoMon(cDto.getApDungChoMon());
                 configRepo.save(config);
             }
         }
@@ -119,7 +129,7 @@ public class KhuyenMaiService {
                 KhuyenMaiConfigDTO cDto = new KhuyenMaiConfigDTO();
                 cDto.setLoaiDoiTuong(c.getLoaiDoiTuong());
                 cDto.setGiaTriDonToiThieu(c.getGiaTriDonToiThieu());
-                cDto.setAp_dung_cho_mon(c.getApDungChoMon());
+                cDto.setApDungChoMon(c.getApDungChoMon());
                 return cDto;
             }).collect(Collectors.toList()));
         }

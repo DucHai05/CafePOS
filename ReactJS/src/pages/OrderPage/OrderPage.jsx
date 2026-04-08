@@ -41,16 +41,41 @@ const OrderPage = () => {
     const [manualDiscount, setManualDiscount] = useState(null);
     const [originalCart, setOriginalCart] = useState([]);
 
+    const validatePromoValid = (promo, currentSubTotal, currentCart) => {
+    if (!promo || !promo.configs || promo.configs.length === 0) return false;
+    
+    const config = promo.configs[0];
 
+    // 1. Check số tiền tối thiểu
+    if (currentSubTotal < config.giaTriDonToiThieu) return false;
+
+    // 2. Check loại món (nếu có yêu cầu cụ thể)
+    if (config.apDungChoMon !== 'ALL') {
+        const hasCategory = currentCart.some(item => item.loai === config.apDungChoMon);
+        if (!hasCategory) return false;
+    }
+
+    return true;
+};
     // Khuyen mai
     const subTotal = React.useMemo(() => 
         CartHelpers.calculateSubTotal(cart), [cart]);
 
-    const autoDiscountVal = React.useMemo(() => 
-        CartHelpers.calculateDiscountValue(autoDiscount, subTotal), [autoDiscount, subTotal]);
+    // 1. Tính giảm giá tự động (Hệ thống)
+    const autoDiscountVal = React.useMemo(() => {
+        // Nếu không thỏa mãn điều kiện (ví dụ chưa đủ 150k) -> Trả về 0đ giảm giá
+        if (!validatePromoValid(autoDiscount, subTotal, cart)) return 0;
+        
+        return CartHelpers.calculateDiscountValue(autoDiscount, subTotal);
+    }, [autoDiscount, subTotal, cart]); // Thêm cart vào đây
 
-    const manualDiscountVal = React.useMemo(() => 
-        CartHelpers.calculateDiscountValue(manualDiscount, subTotal), [manualDiscount, subTotal]);
+    // 2. Tính giảm giá chọn tay (Nhân viên chọn)
+    const manualDiscountVal = React.useMemo(() => {
+        // Tương tự, nếu nhân viên chọn mã mà đơn chưa đủ tiền -> Cũng trả về 0đ
+        if (!validatePromoValid(manualDiscount, subTotal, cart)) return 0;
+
+        return CartHelpers.calculateDiscountValue(manualDiscount, subTotal);
+    }, [manualDiscount, subTotal, cart]);
 
     const totalAmount = React.useMemo(() => 
         CartHelpers.calculateFinalTotal(subTotal, autoDiscountVal, manualDiscountVal), 

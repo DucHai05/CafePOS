@@ -27,13 +27,7 @@ public class KhuyenMaiConfigService {
         return configRepo.save(config);
     }
 
-    /**
-     * 3. HÀM QUAN TRỌNG: Kiểm tra xem đơn hàng có thỏa mãn khuyến mãi không
-     * @param config: Cấu hình của mã đang xét
-     * @param totalAmount: Tổng tiền đơn hàng hiện tại
-     * @param hasCafe: Đơn hàng có chứa món Cafe không (logic ví dụ)
-     * @return boolean: Có được áp dụng hay không
-     */
+
     public boolean checkEligibility(KhuyenMaiConfig config, double totalAmount, boolean hasCafe) {
 
         // TRƯỜNG HỢP 1: Mã áp dụng cho tất cả (ALL) - Thường là ngày lễ

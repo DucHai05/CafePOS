@@ -51,53 +51,77 @@ const PaymentPage = () => {
         initPage();
     }, [maBan, maCaOpen]);
 
-    const handleConfirmPayment = async (method) => {
-        if (!maCaOpen || maCaOpen === 'NONE') {
-            alert("⚠️ Không xác định được ca làm việc!");
-            return;
-        }
+   const handleConfirmPayment = async (method) => {
+            if (!maCaOpen || maCaOpen === 'NONE') {
+                alert("⚠️ Không xác định được ca làm việc!");
+                return;
+            }
 
-        try {
-            // ƯU TIÊN dữ liệu từ State (vì đây là thứ nhân viên vừa thấy ở OrderPage)
-            const finalMaHD = maHDTuState || order?.maHoaDon;
-            const finalAmount = totalTuState || order?.tongTien; 
+            // 1. Lấy dữ liệu thực tế
+            let finalAmount = totalTuState || order?.tongTien; 
             const finalSubTotal = subTotalTuState || order?.tongTienGoc || 0;
+            const currentCart = cartTuState || order?.items || [];
+            let activePromo = manualDiscount || autoDiscount;
+            let finalMaKM = activePromo?.maKhuyenMai || null;
 
-            const paymentPayload = {
-                maHoaDon: finalMaHD, // Nếu null, Backend hiểu là đơn mới cần INSERT
-                maBan: maBan,
-                maCa: maCaOpen,
-                phuongThucThanhToan: method,
-                maKhuyenMai: manualDiscount?.maKhuyenMai || autoDiscount?.maKhuyenMai || null,
-                tongTienSauKM: finalAmount,
-                tongTienGoc: finalSubTotal,
-                thoiGianThanhToan: new Date().toISOString(),
-                trangThaiThanhToan: 'Paid',
-                nhanVienThucHien: 'DucHaii',
+            // 2. CHECK NHẸ: Nếu không đủ điều kiện thì "HỦY" phần giảm giá
+            if (activePromo && activePromo.configs && activePromo.configs.length > 0) {
+                const config = activePromo.configs[0];
+                const checkResult = validatePromotion(config, finalSubTotal, currentCart);
                 
-                // QUAN TRỌNG: Gửi kèm list món để Backend xử lý nếu chưa có MaHD
-                items: cartTuState || order?.items || []
-            };
+                if (!checkResult.valid) {
+                    // KHÔNG 'return' nữa, chỉ thông báo và reset giá về giá gốc
+                    console.warn(`Hủy mã ${activePromo.maKhuyenMai}: ${checkResult.reason}`);
+                    finalAmount = finalSubTotal; // Thu đúng giá gốc
+                    finalMaKM = null; // Coi như không dùng mã
+                }
+            }
 
-            console.log("🚀 Gửi yêu cầu Thanh toán & Lên đơn:", paymentPayload);
+            try {
+                const finalMaHD = maHDTuState || order?.maHoaDon;
 
-            // 1. Thực hiện API Thanh toán (Backend sẽ check: Nếu MaHD null thì INSERT mới)
-            await orderApi.finalPayment(paymentPayload);
-            
-            // 2. Cập nhật doanh thu ca
-            await doanhthuApi.updateAfterPayment(maCaOpen, method, finalAmount);
-            
-            // 3. Giải phóng bàn
-            await tableApi.updateTrangThai(maBan, 'PAID');
+                const paymentPayload = {
+                    maHoaDon: finalMaHD,
+                    maBan: maBan,
+                    maCa: maCaOpen,
+                    phuongThucThanhToan: method,
+                    maKhuyenMai: finalMaKM, // Có thể là null nếu check hụt
+                    tongTienSauKM: finalAmount, // Đã được xử lý về giá gốc nếu hụt điều kiện
+                    tongTienGoc: finalSubTotal,
+                    thoiGianThanhToan: new Date().toISOString(),
+                    trangThaiThanhToan: 'Paid',
+                    nhanVienThucHien: 'Hải POS',
+                    items: currentCart
+                };
 
-            alert("Thanh toán thành công! Đơn hàng đã được lưu chính thức. 🥂");
-            navigate('/sell');
-        } catch (err) {
-            console.error("Lỗi Payment:", err);
-            alert("Lỗi thanh toán: " + (err.response?.data?.message || err.message));
+                await orderApi.finalPayment(paymentPayload);
+                await doanhthuApi.updateAfterPayment(maCaOpen, method, finalAmount);
+                await tableApi.updateTrangThai(maBan, 'PAID');
+
+                alert(finalMaKM ? "Thanh toán thành công (Đã áp dụng KM)! 🥂" : "Thanh toán thành công giá gốc! 🥂");
+                navigate('/sell');
+            } catch (err) {
+                console.error("Lỗi Payment:", err);
+                alert("Lỗi hệ thống: " + (err.response?.data?.message || err.message));
+            }
+        };
+    const validatePromotion = (config, subTotal, cart) => {
+        if (subTotal < config.giaTriDonToiThieu) {
+            return { valid: false, reason: `Đơn hàng chưa đủ ${config.giaTriDonToiThieu.toLocaleString()}đ` };
         }
-    };
 
+        // 2. Kiểm tra Loại món (check theo maLoaiSP)
+        if (config.apDungChoMon !== 'ALL') {
+
+            const hasRequiredCategory = cart.some(item => item.maLoaiSP === config.apDungChoMon);
+            
+            if (!hasRequiredCategory) {
+                return { valid: false, reason: `Đơn hàng phải có ít nhất 1 món thuộc loại ${config.apDungChoMon}` };
+            }
+        }
+
+        return { valid: true };
+    };
     if (loading) return (
             <div className="payment-loading-screen">
                 <Loader2 className="spin-icon" size={48} />

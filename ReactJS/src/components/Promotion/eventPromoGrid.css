@@ -15,9 +15,10 @@
   align-items: flex-start;
   gap: 20px;
   border: 1px solid var(--slate-100);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+  
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.2s ease, background-color 0.3s ease;
 }
 
 .event-card:hover {
@@ -28,7 +29,8 @@
 
 /* Hiệu ứng khi sự kiện đang Active (đang bật) */
 .event-card.active {
-  background: linear-gradient(135deg, #ffffff 0%, var(--indigo-50) 100%);
+  /* Bỏ linear-gradient nếu không cần thiết, dùng màu solid nhạt cho mượt */
+  background-color: var(--indigo-50); 
   border-color: var(--indigo-200);
 }
 
