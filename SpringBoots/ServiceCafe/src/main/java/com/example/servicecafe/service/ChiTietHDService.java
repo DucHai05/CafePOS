@@ -21,7 +21,6 @@ public class ChiTietHDService {
         return chiTietHDRepository.findById(maChiTietHD)
                 .orElseThrow(() -> new RuntimeException("Khong tim thay chi tiet hoa don voi ma: " + maChiTietHD));
     }
-
     public List<ChiTietHD> getByMaHoaDon(HoaDon maHoaDon) {
         return chiTietHDRepository.findByMaHoaDon(maHoaDon);
     }

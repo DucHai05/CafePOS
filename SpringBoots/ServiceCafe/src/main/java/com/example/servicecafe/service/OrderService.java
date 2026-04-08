@@ -1,14 +1,11 @@
 package com.example.servicecafe.service;
 
-import com.example.servicecafe.client.SanPhamClient;
 import com.example.servicecafe.client.TableServiceClient;
 import com.example.servicecafe.dto.*;
 import com.example.servicecafe.entity.ChiTietHD;
 import com.example.servicecafe.entity.HoaDon;
-import com.example.servicecafe.entity.SanPham;
 import com.example.servicecafe.repository.ChiTietHDRepository;
 import com.example.servicecafe.repository.HoaDonRepository;
-import com.example.servicecafe.repository.SanPhamRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

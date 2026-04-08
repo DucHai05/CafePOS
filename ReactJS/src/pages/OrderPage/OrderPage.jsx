@@ -39,7 +39,6 @@ const OrderPage = () => {
 
     const [autoDiscount, setAutoDiscount] = useState(null);
     const [manualDiscount, setManualDiscount] = useState(null);
-    const [availablePromos, setAvailablePromos] = useState([]);
     const [originalCart, setOriginalCart] = useState([]);
 
 
@@ -56,6 +55,7 @@ const OrderPage = () => {
     const totalAmount = React.useMemo(() => 
         CartHelpers.calculateFinalTotal(subTotal, autoDiscountVal, manualDiscountVal), 
         [subTotal, autoDiscountVal, manualDiscountVal]);
+
     useEffect(() => {
         const initData = async () => {
             setLoading(true);
@@ -100,142 +100,82 @@ const OrderPage = () => {
                     p.maSanPham.toLowerCase().includes(searchTerm.toLowerCase())
                 );
         }, [products, activeCategory, searchTerm]);
-    // const handleConfirmOrder = async (isGoingToPayment = false) => {
-    //     if (cart.length === 0) return null;
-    //     try {
-    //         const orderData = { 
-    //             maHoaDon, maBan, maCa: maCaOpen,
-    //             items: cart.map(i => ({ maSanPham: i.maSanPham, soLuong: i.soLuong, giaBan: i.giaBan, ghiChu: i.ghiChu || "" })),
-    //             tongTien: totalAmount
-    //         };
-    //         const res = await orderApi.staffCreate(orderData);
-    //         const newMaHD = res.data.savedHD?.maHoaDon || res.data.maHoaDon || maHoaDon;
-    //         setMaHoaDon(newMaHD);
-    //         setOriginalCart([...cart]);
-    //         await tableApi.updateTrangThai(maBan, 'PENDING');
 
-    //         if (res.data.printToKitchen?.length > 0) {
-    //                 // Duyệt qua danh sách món Bếp trả về, tìm tên từ Giỏ hàng gốc (cart)
-    //                 const enrichedKitchenItems = res.data.printToKitchen.map(printItem => {
-    //                     // Tìm món tương ứng trong cart để lấy tên
-    //                     const itemInCart = cart.find(c => c.maSanPham === printItem.maSanPham);
-                        
-    //                     return {
-    //                         ...printItem,
-    //                         // Lấy tên từ cart, nếu không tìm thấy thì mới dùng tên từ Backend (nếu có)
-    //                         tenSanPham: itemInCart?.tenSanPham || printItem.tenSanPham || "Món không tên"
-    //                     };
-    //                 });
-
-    //                 setItemsToPrint(enrichedKitchenItems);
-    //                 setIsKitchenSlipOpen(true);
-    //             } 
-    //             // --- KẾT THÚC ĐOẠN FIX ---
-    //             else if (!isGoingToPayment) {
-    //                 navigate('/sell');
-    //             }
-    //         return newMaHD;
-    //     } catch (err) { return null; }
-    // };
     const handleConfirmOrder = async (isGoingToPayment = false) => {
-        if (cart.length === 0) return null;
-        try {
-            const orderData = { 
-                maHoaDon, maBan, maCa: maCaOpen,
-                items: cart.map(i => ({ 
-                    maSanPham: i.maSanPham, 
-                    soLuong: i.soLuong, 
-                    giaBan: i.giaBan, 
-                    ghiChu: i.ghiChu || "" 
-                })),
-                tongTien: totalAmount
-            };
-            
-            const res = await orderApi.staffCreate(orderData);
-            const newMaHD = res.data.savedHD?.maHoaDon || res.data.maHoaDon || maHoaDon;
-            
-            await tableApi.updateTrangThai(maBan, 'PENDING');
-            
-            if (!isGoingToPayment) {
-                navigate('/sell');
+            if (cart.length === 0) return null;
+            try {
+                const orderData = { 
+                    maHoaDon, maBan, maCa: maCaOpen,
+                    items: cart.map(i => ({ 
+                        maSanPham: i.maSanPham, 
+                        soLuong: i.soLuong, 
+                        giaBan: i.giaBan, 
+                        ghiChu: i.ghiChu || "" 
+                    })),
+                    tongTien: totalAmount
+                };
+                
+                const res = await orderApi.staffCreate(orderData);
+                const newMaHD = res.data.savedHD?.maHoaDon || res.data.maHoaDon || maHoaDon;
+                
+                await tableApi.updateTrangThai(maBan, 'PENDING');
+                
+                if (!isGoingToPayment) {
+                    navigate('/sell');
+                }
+                return newMaHD;
+            } catch (err) { 
+                alert("Lỗi khi lưu đơn hàng!");
+                return null; 
             }
-            return newMaHD;
-        } catch (err) { 
-            alert("Lỗi khi lưu đơn hàng!");
-            return null; 
-        }
     };
     const handlePrepareKitchenSlip = () => {
-        if (cart.length === 0) {
-        alert("Chưa có món nào được chọn! Vui lòng chọn món trước khi báo bếp.");
-        return;
-    }
-
-        const printItems = [];
-
-        // 1. Tìm món mới hoặc món tăng số lượng
-        cart.forEach(item => {
-            const oldItem = originalCart.find(o => o.maSanPham === item.maSanPham);
-            if (!oldItem) {
-                // Món mới hoàn toàn
-                printItems.push({ ...item, ghiChu: "MỚI" });
-            } else if (item.soLuong > oldItem.soLuong) {
-                // Tăng số lượng
-                printItems.push({ ...item, soLuong: item.soLuong - oldItem.soLuong, ghiChu: "THÊM" });
-            } else if (item.soLuong < oldItem.soLuong) {
-                // Giảm số lượng
-                printItems.push({ ...item, soLuong: oldItem.soLuong - item.soLuong, ghiChu: "GIẢM/HỦY" });
+                if (cart.length === 0) {
+                alert("Chưa có món nào được chọn! Vui lòng chọn món trước khi báo bếp.");
+                return;
             }
-        });
 
-        // 2. Tìm món bị xóa sạch khỏi giỏ hàng
-        originalCart.forEach(oldItem => {
-            const stillInCart = cart.find(c => c.maSanPham === oldItem.maSanPham);
-            if (!stillInCart) {
-                printItems.push({ ...oldItem, ghiChu: "HỦY MÓN" });
-            }
-        });
+                const printItems = [];
 
-        if (printItems.length > 0) {
-            setItemsToPrint(printItems);
-            setIsKitchenSlipOpen(true);
-        } else {
-            // Nếu không có gì thay đổi so với DB, chỉ cần lưu hoặc báo thành công
-            handleConfirmOrder(false);
-        }
-};
-         const hasCartChanged = () => {
-            if (cart.length !== originalCart.length) return true;
-            return JSON.stringify(cart) !== JSON.stringify(originalCart);
+                // 1. Tìm món mới hoặc món tăng số lượng
+                cart.forEach(item => {
+                    const oldItem = originalCart.find(o => o.maSanPham === item.maSanPham);
+                    if (!oldItem) {
+                        // Món mới hoàn toàn
+                        printItems.push({ ...item, ghiChu: "MỚI" });
+                    } else if (item.soLuong > oldItem.soLuong) {
+                        // Tăng số lượng
+                        printItems.push({ ...item, soLuong: item.soLuong - oldItem.soLuong, ghiChu: "THÊM" });
+                    } else if (item.soLuong < oldItem.soLuong) {
+                        // Giảm số lượng
+                        printItems.push({ ...item, soLuong: oldItem.soLuong - item.soLuong, ghiChu: "GIẢM/HỦY" });
+                    }
+                });
+
+                // 2. Tìm món bị xóa sạch khỏi giỏ hàng
+                originalCart.forEach(oldItem => {
+                    const stillInCart = cart.find(c => c.maSanPham === oldItem.maSanPham);
+                    if (!stillInCart) {
+                        printItems.push({ ...oldItem, ghiChu: "HỦY MÓN" });
+                    }
+                });
+
+                if (printItems.length > 0) {
+                    setItemsToPrint(printItems);
+                    setIsKitchenSlipOpen(true);
+                } else {
+                    // Nếu không có gì thay đổi so với DB, chỉ cần lưu hoặc báo thành công
+                    handleConfirmOrder(false);
+                }
         };
 
-        // const handleGoToPayment = async () => {
-        // const changed = hasCartChanged();
 
-        //     if (changed) {
-        //         console.log("🛒 Giỏ hàng có thay đổi -> Lưu rồi mới đi.");
-        //         const idMoi = await handleConfirmOrder(true);
-        //         if (idMoi) {
-        //             navigate(`/payment/${maBan}`, {
-        //                 state: { maHoaDon: idMoi, cart, maCa: maCaOpen, totalAmount, subTotal, manualDiscount, autoDiscount }
-        //             });
-        //         }
-        //     } else {
-        //         console.log("⚡ Giỏ hàng khớp DB -> Đi thẳng!");
-        //         navigate(`/payment/${maBan}`, {
-        //             state: { maHoaDon, cart, maCa: maCaOpen, totalAmount, subTotal, manualDiscount, autoDiscount }
-        //         });
-        //     }
-        // };
         const handleGoToPayment = () => {
-            // Không check changed, không gọi API. 
-            // Cứ bưng nguyên cái giỏ hàng hiện tại đi sang trang Payment.
             
             console.log("🚀 Chuyển sang thanh toán (Giỏ hàng tạm thời)");
             
             navigate(`/payment/${maBan}`, {
                 state: { 
-                    // maHoaDon: Nếu là bàn cũ thì có ID, bàn mới thì là null
                     maHoaDon, 
                     cart, 
                     maCa: maCaOpen, 
@@ -290,6 +230,7 @@ const OrderPage = () => {
                                     key={p.maSanPham}
                                     title={p.tenSanPham}
                                     subtitle={`${p.giaBan.toLocaleString()}đ`}
+                                    image={p.duongDanHinh}
                                     onClick={() => addToCart(p)}
                                     type="product"
                                 />

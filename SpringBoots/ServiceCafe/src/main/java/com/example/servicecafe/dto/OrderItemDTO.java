@@ -4,41 +4,13 @@ import lombok.Data;
 
 @Data
 public class OrderItemDTO {
+    private String maChiTietHD; // <--- Thêm vào
     private String maSanPham;
+    private String tenSanPham;  // <--- Thêm vào
     private Integer soLuong;
     private Double giaBan;
     private String ghiChu;
 
-
-    public String getMaSanPham() {
-        return maSanPham;
-    }
-
-    public void setMaSanPham(String maSanPham) {
-        this.maSanPham = maSanPham;
-    }
-
-    public Integer getSoLuong() {
-        return soLuong;
-    }
-
-    public void setSoLuong(Integer soLuong) {
-        this.soLuong = soLuong;
-    }
-
-    public Double getGiaBan() {
-        return giaBan;
-    }
-
-    public void setGiaBan(Double giaBan) {
-        this.giaBan = giaBan;
-    }
-
-    public String getGhiChu() {
-        return ghiChu;
-    }
-
-    public void setGhiChu(String ghiChu) {
-        this.ghiChu = ghiChu;
-    }
+    // Lưu ý: Vì ông đã có @Data của Lombok rồi,
+    // Hải CÓ THỂ XÓA hết đống Getter/Setter thủ công ở dưới đi cho code nó ngắn!
 }

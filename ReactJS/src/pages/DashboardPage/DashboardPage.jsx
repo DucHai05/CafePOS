@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DollarSign, ShoppingBag, Ticket, Target, Star, ChevronLeft, ChevronRight, BarChart3, TrendingUp } from 'lucide-react';
 import './dashboardpage.css';
 import promo1 from '../../assets/promo.jpg';
-import promo2 from '../../assets/promo2.png';
-import promo3 from '../../assets/promo3.webp';
+import promo2 from '../../assets/promo2.jpg';
+import promo3 from '../../assets/promo3.jpg';
 
 const Dashboard = () => {
    const banners = [
@@ -13,8 +13,15 @@ const Dashboard = () => {
         { id: 3, img: promo3, title: 'Thi đua Nhân viên xuất sắc' }
     ];
     const [currentBanner, setCurrentBanner] = useState(0);
+    useEffect(() => {
+        const timer = setInterval(() => {
+            // Cách viết này an toàn và ngắn gọn hơn nhiều
+            setCurrentBanner(prev => (prev + 1) % banners.length);
+        }, 5000);
 
-    // Giả lập dữ liệu Doanh thu & Khuyến mãi
+        return () => clearInterval(timer);
+    }, [banners.length]); 
+
     const stats = [
         { id: 1, icon: DollarSign, label: 'Doanh thu hôm nay', value: '1,250,000,000đ', trend: '+15%', color: 'indigo' },
         { id: 2, icon: ShoppingBag, label: 'Đơn hàng mới', value: '4500 đơn', trend: '+8%', color: 'blue' },

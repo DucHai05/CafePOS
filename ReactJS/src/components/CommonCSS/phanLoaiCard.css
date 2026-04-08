@@ -1,58 +1,83 @@
-/* src/components/Common/phanLoaiCard.css */
 .p-card {
-  background: white;
-  border: 1px solid var(--slate-100);
-  padding: 16px;
-  border-radius: 16px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: all 0.2s ease;
-  min-height: 120px; /* Giữ các thẻ cao bằng nhau */
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden; /* Để ảnh không tràn khỏi bo góc */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column; /* Chuyển thành hàng dọc: Ảnh trên, chữ dưới */
+    position: relative;
+    width: 100%;
 }
 
 .p-card:hover {
-  border-color: var(--indigo-600);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px -4px rgba(79, 70, 229, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
 }
 
-.p-info h4 {
-  margin: 0 0 4px 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--slate-900);
-  /* Giới hạn 2 dòng tên món */
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
-  overflow: hidden;
+.p-card.active {
+    border: 2px solid #6f4e37; /* Màu nâu cafe của Lado */
+    background: #fffdfb;
 }
 
-.p-info p {
-  margin: 0;
-  color: var(--indigo-600);
-  font-weight: 800;
-  font-size: 0.9rem;
+/* Container của ảnh */
+.p-image-container {
+    width: 100%;
+    height: 120px; /* Chiều cao cố định cho ảnh */
+    overflow: hidden;
+    position: relative;
 }
 
-.p-add {
-  align-self: flex-end;
-  background: var(--slate-50);
-  color: var(--slate-400);
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  transition: 0.2s;
+.p-food-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Quan trọng: Giúp ảnh không bị méo, tự căn giữa */
+    transition: transform 0.5s ease;
 }
 
-.p-card:hover .p-add {
-  background: var(--indigo-600);
-  color: white;
+.p-card:hover .p-food-img {
+    transform: scale(1.1); /* Hiệu ứng zoom nhẹ khi hover */
+}
+
+/* Badge dấu cộng */
+.p-add-badge {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: #6f4e37;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Thông tin chữ */
+.p-info {
+    padding: 10px;
+    text-align: left;
+}
+
+.p-title {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Nếu tên dài quá sẽ hiện dấu ... */
+    font-weight: 600;
+}
+
+.p-price {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    color: #e67e22; /* Màu cam cho giá tiền nổi bật */
+    font-weight: 700;
 }

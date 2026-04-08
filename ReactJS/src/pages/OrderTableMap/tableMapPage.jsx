@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { tableApi } from '../../api/tableAPI';
 import TableCard from '../../components/TableCard/TableCard'; 
 import CategoryTab from '../../components/Common/CategoryTab';
-import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
 import { Layout, Info } from 'lucide-react'; // Icon cho sinh động
 import './tableMapPage.css';
 
@@ -14,21 +12,7 @@ const TableMapPage = () => {
     const [activeCategory, setActiveCategory] = useState('ALL');
     const navigate = useNavigate();
 
-    // --- 1. KẾT NỐI REAL-TIME ---
-    useEffect(() => {
-        const socket = new SockJS('http://localhost:8083/ws-coffee');
-        const stompClient = Stomp.over(socket);
-        stompClient.debug = () => {}; 
-        stompClient.connect({}, () => {
-            stompClient.subscribe('/topic/tables', (message) => {
-                const maBanVuaThanhToan = message.body;
-                setTables(prev => prev.map(t => 
-                    t.maBan === maBanVuaThanhToan ? { ...t, trangThai: 'EMPTY' } : t
-                ));
-            });
-        });
-        return () => { if(stompClient) stompClient.disconnect(); };
-    }, []);
+  
 
     // --- 2. LẤY DỮ LIỆU ---
     useEffect(() => {

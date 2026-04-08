@@ -25,7 +25,6 @@ public class BanService {
         return banRepository.findByKhuVucMaKhuVuc(maKhuVuc);
     }
     public List<Ban> getAll() { return banRepository.findByTrangThaiBanContaining("Hoạt động"); }
-    public List<Ban> getTable(String maBan) { return banRepository.findTrangThaiThanhToanContainingByMaBan(maBan); }
 
 
     // HÀM THÊM MỚI: Chặn ghi đè nếu trùng mã bàn

@@ -29,9 +29,7 @@ public class PaymentDTO {
         this.maBan = maBan;
     }
 
-    public List<OrderItemDTO> getItems() {
-        return items;
-    }
+    public List<OrderItemDTO> getItems() {return items;}
     public void setItems(List<OrderItemDTO> items) {
         this.items = items;
     }
