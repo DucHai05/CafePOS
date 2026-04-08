@@ -1,86 +1,87 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Layout } from 'lucide-react';
 import { tableApi } from '../../api/tableAPI';
-import TableCard from '../../components/TableCard/TableCard'; 
 import CategoryTab from '../../components/Common/CategoryTab';
-import { Layout, Info } from 'lucide-react'; // Icon cho sinh động
+import TableCard from '../../components/TableCard/TableCard';
 import './tableMapPage.css';
 
 const TableMapPage = () => {
-    const [tables, setTables] = useState([]); 
-    const [categories, setCategories] = useState([{ id: 'ALL', name: 'Tất cả khu vực' }]); 
-    const [activeCategory, setActiveCategory] = useState('ALL');
-    const navigate = useNavigate();
+  const [tables, setTables] = useState([]);
+  const [categories, setCategories] = useState([{ id: 'ALL', name: 'Tat ca khu vuc' }]);
+  const [activeCategory, setActiveCategory] = useState('ALL');
+  const navigate = useNavigate();
 
-  
+  useEffect(() => {
+    tableApi
+      .getTables()
+      .then((res) => setTables(res.data))
+      .catch((err) => console.error(err));
 
-    // --- 2. LẤY DỮ LIỆU ---
-    useEffect(() => {
-        // Lấy bàn
-        tableApi.getTables()
-            .then(res => setTables(res.data))
-            .catch(err => console.error(err));
+    tableApi
+      .getKhuVuc()
+      .then((res) => {
+        const apiCategories = res.data.map((kv) => ({
+          id: kv.maKhuVuc,
+          name: kv.tenKhuVuc
+        }));
 
-        // Lấy khu vực
-        tableApi.getKhuVuc()
-            .then(res => {
-                const apiCategories = res.data.map(kv => ({
-                    id: kv.maKhuVuc,
-                    name: kv.tenKhuVuc
-                }));
-                setCategories([{ id: 'ALL', name: 'Tất cả khu vực' }, ...apiCategories]);
-            })
-            .catch(err => console.error(err));
-    }, []);
+        setCategories([{ id: 'ALL', name: 'Tat ca khu vuc' }, ...apiCategories]);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
-    const handleTableClick = (table) => navigate(`/order/${table.maBan}`);
+  const handleTableClick = (table) => navigate(`/staff/order/${table.maBan}`);
 
-    const filteredTables = tables.filter(t => {
-        if (activeCategory === 'ALL') return true;
-        const tableKV = t.maKhuVuc || t.khuVuc?.maKhuVuc || t.makhuvuc;
-        return String(tableKV || "").trim() === String(activeCategory || "").trim();
-    });
+  const filteredTables = tables.filter((table) => {
+    if (activeCategory === 'ALL') return true;
 
-    return (
-        <div className="table-map-wrapper">
-            <header className="map-header">
-                <div className="header-info">
-                    <h1>Sơ đồ bàn</h1>
-                    <p>Trạng thái phục vụ thời gian thực</p>
-                </div>
-                <div className="map-legend">
-                    <div className="legend-item"><span className="dot empty"></span> Trống</div>
-                    <div className="legend-item"><span className="dot busy"></span> Có khách</div>
-                    <div className="legend-item"><span className="dot pending"></span> Chờ thanh toán</div>
-                </div>
-            </header>
+    const tableKV = table.maKhuVuc || table.khuVuc?.maKhuVuc || table.makhuvuc;
+    return String(tableKV || '').trim() === String(activeCategory || '').trim();
+  });
 
-            <div className="filter-section">
-                <CategoryTab 
-                    categories={categories} 
-                    activeId={activeCategory} 
-                    onSelect={setActiveCategory} 
-                />
-            </div>
-
-            <div className="table-grid-modern">
-                {filteredTables.length === 0 ? (
-                    <div className="empty-state-map">
-                        <Layout size={48} color="#cbd5e1" />
-                        <p>Khu vực này hiện chưa có bàn nào được thiết lập.</p>
-                    </div>
-                ) : (
-                    filteredTables.map(item => (
-                        <TableCard
-                            key={item.maBan}
-                            table={item}
-                            onClick={() => handleTableClick(item)}
-                        />
-                    ))
-                )}
-            </div>
+  return (
+    <div className="table-map-wrapper">
+      <header className="map-header">
+        <div className="header-info">
+          <h1>So do ban</h1>
+          <p>Trang thai phuc vu thoi gian thuc</p>
         </div>
-    );
+        <div className="map-legend">
+          <div className="legend-item">
+            <span className="dot empty"></span> Trong
+          </div>
+          <div className="legend-item">
+            <span className="dot busy"></span> Co khach
+          </div>
+          <div className="legend-item">
+            <span className="dot pending"></span> Cho thanh toan
+          </div>
+        </div>
+      </header>
+
+      <div className="filter-section">
+        <CategoryTab
+          categories={categories}
+          activeId={activeCategory}
+          onSelect={setActiveCategory}
+        />
+      </div>
+
+      <div className="table-grid-modern">
+        {filteredTables.length === 0 ? (
+          <div className="empty-state-map">
+            <Layout size={48} color="#cbd5e1" />
+            <p>Khu vuc nay hien chua co ban nao duoc thiet lap.</p>
+          </div>
+        ) : (
+          filteredTables.map((item) => (
+            <TableCard key={item.maBan} table={item} onClick={() => handleTableClick(item)} />
+          ))
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default TableMapPage;
