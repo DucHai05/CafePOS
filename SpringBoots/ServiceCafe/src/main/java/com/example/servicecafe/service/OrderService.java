@@ -27,16 +27,12 @@ public class OrderService {
     private ChiTietHDRepository chiTietRepository;
 
     @Autowired
-    private SanPhamRepository sanPhamRepository;
-
-    @Autowired
     private TableServiceClient tableServiceClient;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
-    @Autowired
-    private SanPhamClient sanPhamClient;
+
 
     @Transactional
     public HoaDon createOrder(OrderRequestDTO request) {
@@ -177,11 +173,11 @@ public class OrderService {
 
         return Map.of("hoaDon", savedHD, "printToKitchen", newItemsForKitchen);
     }
+
     private ChiTietHD createKitchenSlip(String maSP, int qty, String note, String actionTag) {
         ChiTietHD slip = new ChiTietHD();
         slip.setMaSanPham(maSP);
         slip.setSoLuong(qty);
-        // Gắn nhãn để đầu bếp nhìn phát biết ngay là HỦY hay THÊM
         slip.setGhiChu("[" + actionTag + "] " + (note != null ? note : ""));
         return slip;
     }
@@ -280,11 +276,5 @@ public class OrderService {
         // 5. Bắn WebSocket cập nhật sơ đồ bàn
         messagingTemplate.convertAndSend("/topic/tables", hd.getMaBan());
     }
-//    private ChiTietHD createKitchenSlip(String maSP, String tenSP, int qty, String note, String actionTag) {
-//        ChiTietHD slip = new ChiTietHD();
-//        slip.setMaSanPham(maSP);
-//        slip.setSoLuong(qty);
-//        slip.setGhiChu("[" + actionTag + "] " + (note != null ? note : ""));
-//        return slip;
-//    }
+
 }

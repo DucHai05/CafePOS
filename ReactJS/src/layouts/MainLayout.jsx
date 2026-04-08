@@ -56,7 +56,7 @@ const MainLayout = () => {
           <div className="user-profile">
             <UserCircle size={32} color="#4f46e5" strokeWidth={1.5} />
             <div className="user-meta">
-              <p className="user-name">Hải Admin</p>
+              <p className="user-name">Bùi Đức Hải</p>
               <p className="user-role">Quản lý hệ thống</p>
             </div>
           </div>

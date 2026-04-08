@@ -32,10 +32,16 @@ const KitchenSlipModal = ({ isOpen, onClose, maBan, khuVuc, cart, onConfirm }) =
                                 const isCancel = item.ghiChu?.includes("HỦY");
                                 const isAdd = item.ghiChu?.includes("THÊM");
 
+                                // Dòng này để Hải F12 lên xem thực tế cái item nó có những gì
+                                console.log("Món trong bếp:", item); 
+
                                 return (
-                                    <tr key={`${item.maSanPham}-${i}`} className={isCancel ? 'row-cancel' : ''}>
+                                    <tr key={`${item.maSanPham || i}-${i}`} className={isCancel ? 'row-cancel' : ''}>
                                         <td>
-                                            <div className="item-name-big">{item.tenSanPham}</div>
+                                            <div className="item-name-big">
+                                                {/* Thử cả 2 trường hợp tên biến phổ biến */}
+                                                {item.tenSanPham || item.tenMon || "Chưa có tên"}
+                                            </div>
                                             {(isCancel || isAdd) && (
                                                 <div className={`item-action-tag ${isCancel ? 'txt-red' : 'txt-blue'}`}>
                                                     {item.ghiChu}

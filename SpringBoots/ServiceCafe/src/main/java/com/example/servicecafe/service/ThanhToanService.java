@@ -4,11 +4,14 @@ import com.example.servicecafe.dto.PaymentDTO;
 import com.example.servicecafe.entity.*;
 import com.example.servicecafe.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.messaging.simp.SimpMessagingTemplate; // Đảm bảo đã import
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ThanhToanService {
@@ -23,35 +26,72 @@ public class ThanhToanService {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+
+    @Modifying
     @Transactional
     public void xuLyThanhToan(PaymentDTO dto) {
-        // 1. Tìm hóa đơn cũ, nếu không thấy thì tạo mới luôn (né lỗi 50)
-        HoaDon hd = hoaDonRepository.findById(dto.getMaHoaDon())
-                .orElse(new HoaDon());
-
-        // 2. Nếu là hóa đơn mới (ID chưa có trong DB) thì set ID và ngày vào
-        if (hd.getMaHoaDon() == null) {
-            hd.setMaHoaDon(dto.getMaHoaDon());
-            hd.setThoiGianVao(LocalDateTime.now().minusMinutes(30)); // Giả định vào 30p trước
-        }
-
-        // 3. Cập nhật các thông tin thanh toán từ React gửi lên
-        hd.setMaBan(dto.getMaBan());
-        hd.setPhuongThucThanhToan(dto.getPhuongThucThanhToan());
-        hd.setMaKhuyenMai(dto.getMaKhuyenMai());
-        hd.setTongTien(dto.getTongTienSauKM());
-        hd.setTrangThaiThanhToan("Paid"); // Chốt là đã thanh toán
-        hd.setThoiGianRa(LocalDateTime.now());
-
-        // 4. Lưu xuống SQL Server
-        hoaDonRepository.save(hd);
-
-        // 5. Bắn tín hiệu WebSocket cho Sơ đồ bàn (MapTable) tự đổi màu
         try {
+            String inputMaHD = dto.getMaHoaDon();
+            System.out.println(">>> [DEBUG] Bắt đầu xử lý HD: " + inputMaHD);
+
+            HoaDon hd = null;
+
+            // 1. CHẶN LỖI: Chỉ tìm kiếm nếu ID không phải null/rỗng
+            if (inputMaHD != null && !inputMaHD.trim().isEmpty() && !"undefined".equals(inputMaHD)) {
+                hd = hoaDonRepository.findById(inputMaHD).orElse(null);
+            }
+
+            // 2. Nếu không tìm thấy hoặc ID truyền vào là null -> Tạo mới
+            if (hd == null) {
+                System.out.println(">>> [INFO] Đang tạo hóa đơn mới hoàn toàn...");
+                hd = new HoaDon();
+                // Tự sinh mã nếu chưa có
+                String finalMaHD = (inputMaHD != null && !inputMaHD.trim().isEmpty() && !"undefined".equals(inputMaHD))
+                        ? inputMaHD
+                        : "HD" + System.currentTimeMillis();
+                hd.setMaHoaDon(finalMaHD);
+                hd.setThoiGianVao(LocalDateTime.now().minusMinutes(30));
+            }
+
+            // 3. Cập nhật các thông tin còn lại
+            hd.setMaBan(dto.getMaBan());
+            hd.setMaCa(dto.getMaCa());
+            hd.setPhuongThucThanhToan(dto.getPhuongThucThanhToan());
+            hd.setMaKhuyenMai(dto.getMaKhuyenMai());
+            hd.setTongTien(dto.getTongTienSauKM());
+            hd.setTrangThaiThanhToan("Paid");
+            hd.setThoiGianRa(LocalDateTime.now());
+
+            // 4. Lưu Header
+            HoaDon savedHd = hoaDonRepository.save(hd);
+
+            // 5. Lưu Chi tiết (Phần này ông đã sửa ok rồi, nhớ gán mã chi tiết nhé)
+            if (dto.getItems() != null && !dto.getItems().isEmpty()) {
+                chiTietRepository.deleteByMaHoaDon(savedHd);
+                chiTietRepository.flush();
+
+                int index = 1;
+                List<ChiTietHD> chiTiets = new ArrayList<>();
+                for (var itemDto : dto.getItems()) {
+                    ChiTietHD ct = new ChiTietHD();
+                    ct.setMaChiTietHD(savedHd.getMaHoaDon() + "CTHD" + (index++));
+                    ct.setMaHoaDon(savedHd);
+                    ct.setMaSanPham(itemDto.getMaSanPham());
+                    ct.setSoLuong(itemDto.getSoLuong());
+                    ct.setDonGia(itemDto.getGiaBan());
+                    ct.setGhiChu(itemDto.getGhiChu());
+                    chiTiets.add(ct);
+                }
+                chiTietRepository.saveAll(chiTiets);
+            }
+
             messagingTemplate.convertAndSend("/topic/tables", dto.getMaBan());
-            System.out.println(">>> Đã giải phóng bàn " + dto.getMaBan() + " qua WebSocket");
+            System.out.println(">>> [SUCCESS] Đã thanh toán xong bàn: " + dto.getMaBan());
+
         } catch (Exception e) {
-            System.err.println("Lỗi WebSocket: " + e.getMessage());
+            System.err.println("❌ LỖI THANH TOÁN: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
     }
 }

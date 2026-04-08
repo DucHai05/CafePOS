@@ -8,29 +8,18 @@ import java.util.List;
 @Data
 public class PaymentDTO {
     private String maHoaDon;
-
-    public String getMaHoaDon() {
-        return maHoaDon;
-    }
-
-    public void setMaHoaDon(String maHoaDon) {
-        this.maHoaDon = maHoaDon;
-    }
-
     private String maBan;
-    private List<ItemDTO> items;
+    private List<OrderItemDTO> items;
     private String phuongThucThanhToan;
     private String maKhuyenMai;
     private Double tongTienSauKM;
     private String thoiGianThanhToan;
     private String trangThaiThanhToan;
+    private String maCa;
 
-    @Data
-    public static class ItemDTO {
-        private String maSanPham;
-        private Integer soLuong;
-        private Double giaBan;
-    }
+    public String getMaCa() {return maCa;}
+
+    public void setMaCa(String maCa) {this.maCa = maCa;}
 
     public String getMaBan() {
         return maBan;
@@ -40,11 +29,10 @@ public class PaymentDTO {
         this.maBan = maBan;
     }
 
-    public List<ItemDTO> getItems() {
+    public List<OrderItemDTO> getItems() {
         return items;
     }
-
-    public void setItems(List<ItemDTO> items) {
+    public void setItems(List<OrderItemDTO> items) {
         this.items = items;
     }
 
@@ -86,5 +74,13 @@ public class PaymentDTO {
 
     public void setTrangThaiThanhToan(String trangThaiThanhToan) {
         this.trangThaiThanhToan = trangThaiThanhToan;
+    }
+
+    public String getMaHoaDon() {
+        return maHoaDon;
+    }
+
+    public void setMaHoaDon(String maHoaDon) {
+        this.maHoaDon = maHoaDon;
     }
 }
