@@ -141,6 +141,29 @@
 
 .stat-info label { font-size: 0.8rem; font-weight: 600; color: var(--slate-500); }
 .stat-info h4 { font-size: 1.15rem; font-weight: 700; margin: 4px 0 0; }
+.stat-info.full { width: 100%; }
+.thu-chi-combined { align-items: flex-start; }
+.thu-chi-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+.thu-chi-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+}
+.thu-chi-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+}
 
 .stat-box.highlight {
   grid-column: span 2;

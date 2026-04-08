@@ -126,13 +126,37 @@
   color: var(--slate-400); cursor: pointer;
 }
 
-.modal-header { text-align: center; margin-bottom: 24px; }
-.modal-icon { width: 64px; height: 64px; border-radius: 18px; margin: 0 auto 16px; display: grid; place-items: center; }
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+.modal-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
 .modal-icon.thu { background: var(--emerald-50); color: var(--emerald-500); }
 .modal-icon.chi { background: var(--rose-50); color: var(--rose-500); }
 
-.modal-header h3 { font-size: 1.25rem; color: var(--slate-800); margin: 0; }
-.modal-header p { font-size: 0.9rem; color: var(--slate-500); margin: 8px 0 0; }
+.modal-header-text { min-width: 0; }
+.modal-header h3 {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  color: var(--slate-800);
+  margin: 0;
+}
+.modal-header p {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #94a3b8;
+  margin: 6px 0 0;
+}
 
 .modern-form-group { margin-bottom: 20px; }
 .modern-form-group label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--slate-800); margin-bottom: 8px; }
@@ -141,13 +165,15 @@
 .input-with-symbol svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--slate-400); }
 .input-with-symbol input {
   width: 100%; padding: 12px 14px 12px 42px; border: 1px solid #e2e8f0; border-radius: 12px;
-  font-size: 1.1rem; font-weight: 700; background: #f8fafc;
+  font-size: 1.1rem; font-weight: 700; background: #f8fafc; color: var(--slate-800); caret-color: var(--slate-800);
 }
 
 .modern-form-group textarea {
   width: 100%; padding: 12px 14px; border: 1px solid #e2e8f0; border-radius: 12px;
-  font-family: inherit; font-size: 0.95rem; background: #f8fafc; resize: none;
+  font-family: inherit; font-size: 0.95rem; background: #f8fafc; resize: none; color: var(--slate-800); caret-color: var(--slate-800);
 }
+.input-with-symbol input::placeholder,
+.modern-form-group textarea::placeholder { color: #94a3b8; opacity: 1; }
 
 .modal-footer { display: flex; gap: 12px; margin-top: 32px; }
 .btn-cancel-ghost { 

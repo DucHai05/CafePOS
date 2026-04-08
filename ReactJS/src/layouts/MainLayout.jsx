@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -13,6 +14,21 @@ import './MainLayout.css';
 import ladoLogo from '../assets/LADO.png';
 const MainLayout = () => {
   const navigate = useNavigate();
+  const [currentTime, setCurrentTime] = useState('');
+
+  useEffect(() => {
+    const formatTime = () =>
+      new Date().toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+
+    setCurrentTime(formatTime());
+    const timer = setInterval(() => setCurrentTime(formatTime()), 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="pos-app">
@@ -78,7 +94,7 @@ const MainLayout = () => {
               Server Online
             </div>
             <button className="icon-btn"><Bell size={20} /></button>
-            <div className="time-display">03:22 AM</div>
+            <div className="time-display">{currentTime}</div>
           </div>
         </header>
         

@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import DoanhThuManager from './DoanhThuManager.jsx';
 import CaDetail from './CaDetail.jsx';
+import HoaDonDetail from '../../components/HoaDon/HoaDonDetail.jsx';
 import './CaManager.css';
 
 const API_URL = 'http://localhost:8084/api/ca';
@@ -52,7 +53,7 @@ const CaManager = () => {
         try {
             const response = await axios.get(API_URL_BAN);
             const map = {};
-            (response.data || []).forEach((ban) => {
+            (response.data || []).filter((ban) => String(ban?.trangThaiBan || '').trim() !== 'Ẩn').forEach((ban) => {
                 if (ban.maBan) map[ban.maBan] = ban.tenBan || ban.maBan;
             });
             setBanMap(map);
@@ -215,19 +216,23 @@ const CaManager = () => {
                         </div>
                     ) : (
                         filteredHoaDons.map((order) => (
-                            <div key={order.maHoaDon} className="modern-order-card" onClick={() => setSelectedOrder(order)}>
-                                <div className="order-main">
+                            <div
+                                key={order.maHoaDon}
+                                className="modern-order-card"
+                                onClick={() => setSelectedOrder({ ...order, tenBan: getOrderTableName(order) })}
+                            >
+                                <div className="order-left">
                                     <div className="order-id">
                                         <strong>{order.maHoaDon}</strong>
                                         <span>{getOrderTableName(order)}</span>
                                     </div>
+                                    <span className="order-time">{order.thoiGianVao?.split('.')[0]}</span>
+                                </div>
+                                <div className="order-right">
                                     <div className="order-amount">
                                         {formatCurrency(order.tongTien)}
                                     </div>
-                                </div>
-                                <div className="order-details">
                                     <span className="pay-method">{order.phuongThucThanhToan}</span>
-                                    <span className="order-time">{order.thoiGianVao?.split('.')[0]}</span>
                                 </div>
                             </div>
                         ))

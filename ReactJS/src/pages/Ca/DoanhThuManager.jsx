@@ -155,8 +155,10 @@ const DoanhThuManager = ({ ca, onRefreshCa }) => {
                             <div className={`modal-icon ${modalType}`}>
                                 {modalType === 'thu' ? <TrendingUp size={28}/> : <TrendingDown size={28}/>}
                             </div>
-                            <h3>Lập phiếu {modalType === 'thu' ? 'Thu tiền' : 'Chi tiền'}</h3>
-                            <p>Vui lòng nhập chính xác số tiền và lý do thực hiện.</p>
+                            <div className="modal-header-text">
+                                <h3>Lập phiếu {modalType === 'thu' ? 'Thu tiền' : 'Chi tiền'}</h3>
+                                <p>Vui lòng nhập chính xác số tiền và lý do thực hiện.</p>
+                            </div>
                         </div>
 
                         <div className="modal-body">

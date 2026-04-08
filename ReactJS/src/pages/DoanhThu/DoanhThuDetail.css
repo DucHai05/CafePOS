@@ -88,14 +88,27 @@
 .txt-indigo { color: var(--indigo-600); font-weight: 800; }
 
 /* Orders Feed */
-.orders-feed { padding: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; background: var(--slate-50); }
-.feed-item { background: white; padding: 16px; border-radius: 12px; border: 1px solid #f1f5f9; transition: transform 0.2s; }
-.feed-item:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-.feed-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-.order-id { font-weight: 800; color: var(--slate-800); font-size: 0.95rem; }
-.order-price { color: #10b981; font-weight: 800; }
-.feed-bottom { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.8rem; font-weight: 600; color: var(--slate-400); }
-.time-txt { background: var(--slate-50); padding: 2px 6px; border-radius: 4px; }
+.orders-feed { padding: 24px; display: grid; grid-template-columns: 1fr; gap: 16px; background: var(--slate-50); }
+.feed-item {
+  width: 100%;
+  background: white;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #f1f5f9;
+  transition: 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.feed-item:hover { border-color: var(--indigo-600); background: #f5f3ff; transform: translateY(-2px); }
+.order-left { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.order-id strong { display: block; font-weight: 800; color: var(--slate-800); font-size: 0.95rem; }
+.order-id span { font-size: 0.85rem; color: var(--slate-600); }
+.order-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; text-align: right; }
+.order-price { color: #0f172a; font-weight: 800; font-size: 1.05rem; }
+.order-time { font-size: 0.8rem; font-weight: 600; color: var(--slate-400); }
+.pay-method { background: var(--slate-50); padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: var(--slate-600); }
 
 /* Bottom Grid */
 .detail-grid-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }

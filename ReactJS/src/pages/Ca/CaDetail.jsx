@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { 
-  ChevronLeft, 
-  Clock, 
-  User, 
-  Calendar, 
-  DollarSign, 
-  CreditCard, 
-  ArrowUpCircle, 
-  ArrowDownCircle, 
+import {
+  ChevronLeft,
+  Clock,
+  User,
+  Calendar,
+  DollarSign,
+  CreditCard,
+  ArrowUpCircle,
+  ArrowDownCircle,
   Wallet,
   ShoppingBag,
   Search,
@@ -25,7 +25,7 @@ const CaDetail = ({ ca, onBack }) => {
     const [searchText, setSearchText] = useState('');
     const [category, setCategory] = useState('Tất cả');
     const [doanhThu, setDoanhThu] = useState(null);
-    const [orders, setOrders] = useState([]); 
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -43,7 +43,7 @@ const CaDetail = ({ ca, onBack }) => {
                 }
                 setOrders(resHoaDon.data || []);
             } catch (error) {
-                console.error("Lỗi fetch dữ liệu:", error);
+                console.error('Lỗi fetch dữ liệu:', error);
             } finally {
                 setLoading(false);
             }
@@ -51,7 +51,6 @@ const CaDetail = ({ ca, onBack }) => {
         fetchData();
     }, [ca]);
 
-    // Logic tính toán (Giữ nguyên logic của Hải nhưng bọc trong useMemo)
     const totals = useMemo(() => {
         return orders.reduce((acc, order) => {
             const amount = Number(order.tongTienSauKM || order.tongTien || 0);
@@ -87,8 +86,8 @@ const CaDetail = ({ ca, onBack }) => {
     const filteredProducts = useMemo(() => {
         return allProductsInOrders.filter((product) => {
             const matchesCategory = category === 'Tất cả' || product.loai === category;
-            const matchesSearch = !searchText || 
-                `${product.maSP} ${product.tenSP}`.toLowerCase().includes(searchText.toLowerCase());
+            const matchesSearch =
+                !searchText || `${product.maSP} ${product.tenSP}`.toLowerCase().includes(searchText.toLowerCase());
             return matchesCategory && matchesSearch;
         });
     }, [allProductsInOrders, category, searchText]);
@@ -96,6 +95,8 @@ const CaDetail = ({ ca, onBack }) => {
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
     };
+
+    const tienMatTrongKet = Number(ca?.soTienKet || 0);
 
     if (loading) return (
         <div className="ca-loading-container">
@@ -106,7 +107,6 @@ const CaDetail = ({ ca, onBack }) => {
 
     return (
         <div className="ca-detail-container">
-            {/* TOP NAVIGATION */}
             <div className="ca-detail-nav">
                 <button className="btn-back-ghost" onClick={onBack}>
                     <ChevronLeft size={20} /> Quay lại danh sách
@@ -120,7 +120,6 @@ const CaDetail = ({ ca, onBack }) => {
             </div>
 
             <div className="ca-detail-grid">
-                {/* LEFT COLUMN: SHIFT INFO */}
                 <div className="ca-info-card">
                     <div className="card-header">
                         <Clock size={20} /> <h3>Thông tin vận hành</h3>
@@ -145,7 +144,6 @@ const CaDetail = ({ ca, onBack }) => {
                     </div>
                 </div>
 
-                {/* RIGHT COLUMN: REVENUE SUMMARY */}
                 <div className="ca-revenue-card">
                     <div className="card-header">
                         <DollarSign size={20} /> <h3>Tổng hợp doanh thu</h3>
@@ -165,18 +163,29 @@ const CaDetail = ({ ca, onBack }) => {
                                 <h4>{formatCurrency(totals.transfer || doanhThu?.tienCK)}</h4>
                             </div>
                         </div>
-                        <div className="stat-box thu">
-                            <div className="stat-icon"><ArrowUpCircle size={20}/></div>
-                            <div className="stat-info">
-                                <label>Tổng thu</label>
-                                <h4 className="text-success">+{formatCurrency(doanhThu?.tienThu)}</h4>
+                        <div className="stat-box thu-chi-combined">
+                            <div className="stat-info full">
+                                <div className="thu-chi-columns">
+                                    <div className="thu-chi-col">
+                                        <span className="thu-chi-label text-success">
+                                            <ArrowUpCircle size={16}/> Thu
+                                        </span>
+                                        <strong className="text-success">+{formatCurrency(doanhThu?.tienThu)}</strong>
+                                    </div>
+                                    <div className="thu-chi-col">
+                                        <span className="thu-chi-label text-danger">
+                                            <ArrowDownCircle size={16}/> Chi
+                                        </span>
+                                        <strong className="text-danger">-{formatCurrency(doanhThu?.tienChi)}</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="stat-box chi">
-                            <div className="stat-icon"><ArrowDownCircle size={20}/></div>
+                        <div className="stat-box">
+                            <div className="stat-icon wallet"><Wallet size={20}/></div>
                             <div className="stat-info">
-                                <label>Tổng chi</label>
-                                <h4 className="text-danger">-{formatCurrency(doanhThu?.tienChi)}</h4>
+                                <label>Tiền mặt trong két</label>
+                                <h4>{formatCurrency(tienMatTrongKet)}</h4>
                             </div>
                         </div>
                         <div className="stat-box full-width highlight">
@@ -190,7 +199,6 @@ const CaDetail = ({ ca, onBack }) => {
                 </div>
             </div>
 
-            {/* PRODUCT TABLE SECTION */}
             <div className="ca-products-section">
                 <div className="section-header">
                     <div className="header-left">
@@ -200,9 +208,9 @@ const CaDetail = ({ ca, onBack }) => {
                     <div className="header-filters">
                         <div className="search-input">
                             <Search size={18} />
-                            <input 
-                                type="text" 
-                                placeholder="Tìm món..." 
+                            <input
+                                type="text"
+                                placeholder="Tìm món..."
                                 value={searchText}
                                 onChange={(e) => setSearchText(e.target.value)}
                             />
@@ -250,7 +258,6 @@ const CaDetail = ({ ca, onBack }) => {
                 </div>
             </div>
 
-            {/* BOTTOM SECTION: NOTES */}
             <div className="ca-bottom-grid">
                 <div className="note-card">
                     <div className="card-header"><FileText size={18}/> <h3>Ghi chú bàn giao</h3></div>

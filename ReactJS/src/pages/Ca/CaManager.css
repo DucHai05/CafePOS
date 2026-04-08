@@ -120,16 +120,26 @@
 .tab-btn.active { color: #4f46e5; border-bottom-color: #4f46e5; }
 .count-badge { background: #f1f5f9; color: #64748b; padding: 4px 12px; border-radius: 99px; font-size: 0.8rem; font-weight: 700; }
 
-.order-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.order-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
 .modern-order-card {
-  padding: 16px; border: 1px solid #f1f5f9; border-radius: 14px; cursor: pointer; transition: 0.2s;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 .modern-order-card:hover { border-color: #4f46e5; background: #f5f3ff; transform: translateY(-2px); }
-.order-main { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.order-left { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .order-id strong { display: block; font-size: 1rem; color: #1e293b; }
 .order-id span { font-size: 0.85rem; color: #64748b; }
+.order-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; flex-shrink: 0; text-align: right; }
 .order-amount { font-weight: 800; color: #0f172a; font-size: 1.1rem; }
-.order-details { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
+.order-time { font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
 .pay-method { background: #f8fafc; padding: 2px 8px; border-radius: 4px; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { 
   ChevronLeft, 
@@ -15,6 +15,7 @@ import {
   CreditCard,
   Banknote
 } from 'lucide-react';
+import HoaDonDetail from '../../components/HoaDon/HoaDonDetail.jsx';
 import './DoanhThuDetail.css';
 
 const API_URL_HOADON = 'http://localhost:8081/api/hoadon';
@@ -25,6 +26,7 @@ const DoanhThuDetail = ({ doanhThu, onBack }) => {
     const [hoaDons, setHoaDons] = useState([]);
     const [banMap, setBanMap] = useState({});
     const [loading, setLoading] = useState(true);
+    const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
         if (doanhThu?.maCa) fetchRelatedData();
@@ -40,9 +42,11 @@ const DoanhThuDetail = ({ doanhThu, onBack }) => {
 
             const map = {};
             if (Array.isArray(banRes.data)) {
-                banRes.data.forEach((ban) => {
+                banRes.data
+                    .filter((ban) => String(ban?.trangThaiBan || '').trim() !== 'Ẩn')
+                    .forEach((ban) => {
                     if (ban.maBan) map[ban.maBan] = ban.tenBan || ban.maBan;
-                });
+                    });
             }
             setBanMap(map);
             setHoaDons(hoaDonRes.data || []);
@@ -80,8 +84,13 @@ const DoanhThuDetail = ({ doanhThu, onBack }) => {
             return acc;
         }, { cash: 0, transfer: 0 });
     }, [hoaDons]);
+    const soTienKet = Number(doanhThu?.ca?.soTienKet ?? doanhThu?.soTienKet ?? 0);
 
     const formatCurrency = (amount) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
+
+    if (selectedOrder) {
+        return <HoaDonDetail order={selectedOrder} onBack={() => setSelectedOrder(null)} />;
+    }
 
     if (loading) return (
         <div className="detail-loading-wrapper">
@@ -178,15 +187,21 @@ const DoanhThuDetail = ({ doanhThu, onBack }) => {
                 </div>
                 <div className="orders-feed">
                     {hoaDons.map((order) => (
-                        <div key={order.maHoaDon} className="feed-item">
-                            <div className="feed-top">
-                                <span className="order-id">{order.maHoaDon}</span>
-                                <span className="order-price">{formatCurrency(order.tongTien)}</span>
+                        <div
+                            key={order.maHoaDon}
+                            className="feed-item"
+                            onClick={() => setSelectedOrder({ ...order, tenBan: banMap[order.maBan] || order.maBan })}
+                        >
+                            <div className="order-left">
+                                <div className="order-id">
+                                    <strong>{order.maHoaDon}</strong>
+                                    <span>{banMap[order.maBan] || order.maBan}</span>
+                                </div>
+                                <span className="order-time">{order.thoiGianVao?.split('.')[0]}</span>
                             </div>
-                            <div className="feed-bottom">
-                                <span>Bàn: {banMap[order.maBan] || order.maBan}</span>
-                                <span>{order.phuongThucThanhToan}</span>
-                                <span className="time-txt">{order.thoiGianVao?.split('.')[0]}</span>
+                            <div className="order-right">
+                                <span className="order-price">{formatCurrency(order.tongTien)}</span>
+                                <span className="pay-method">{order.phuongThucThanhToan}</span>
                             </div>
                         </div>
                     ))}

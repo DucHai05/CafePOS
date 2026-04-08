@@ -123,10 +123,10 @@ const BanManager = ({ khuVuc }) => {
                     <div className="input-group">
                         <label>Mã bàn</label>
                         <input
-                            type="text" placeholder="Ví dụ: B01"
+                            type="text" placeholder="Ví dụ: TANG1001"
                             value={formData.maBan}
                             onChange={(e) => setFormData({ ...formData, maBan: e.target.value })}
-                            disabled={isEditing} required
+                            disabled required
                         />
                     </div>
                     <div className="input-group">

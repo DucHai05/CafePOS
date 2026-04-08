@@ -7,12 +7,17 @@ import com.example.servicetable.repository.BanRepository;
 import com.example.servicetable.repository.KhuVucRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BanService {
+    private static final String MAINTENANCE_STATUS = "Bảo trì";
+
     @Autowired
     private BanRepository banRepository;
+
     @Autowired
     private KhuVucRepository khuVucRepository;
 
@@ -24,22 +29,21 @@ public class BanService {
     public List<Ban> getByKhuVuc(String maKhuVuc) {
         return banRepository.findByKhuVucMaKhuVuc(maKhuVuc);
     }
-    public List<Ban> getAll() { return banRepository.findByTrangThaiBanContaining("Hoạt động"); }
 
+    public List<Ban> getAll() {
+        return banRepository.findByTrangThaiBanContaining("Hoạt động");
+    }
 
-    // HÀM THÊM MỚI: Chặn ghi đè nếu trùng mã bàn
+    public List<Ban> getTable(String maBan) {
+        return banRepository.findTrangThaiThanhToanContainingByMaBan(maBan);
+    }
+
     public Ban create(BanDTO dto) {
-        // 1. Kiểm tra trùng mã bàn (Primary Key)
-        if (banRepository.existsById(dto.getMaBan())) {
-            throw new RuntimeException("Mã bàn này đã tồn tại, không thể thêm mới!");
-        }
-
-        // 2. Kiểm tra xem khu vực có tồn tại không
         KhuVuc khuVuc = khuVucRepository.findById(dto.getMaKhuVuc())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu Vực!"));
 
         Ban ban = new Ban();
-        ban.setMaBan(dto.getMaBan());
+        ban.setMaBan(generateMaBan(khuVuc.getMaKhuVuc()));
         ban.setTenBan(dto.getTenBan());
         ban.setTrangThaiBan(dto.getTrangThaiBan());
         ban.setKhuVuc(khuVuc);
@@ -47,7 +51,6 @@ public class BanService {
         return banRepository.save(ban);
     }
 
-    // HÀM CẬP NHẬT: Cho phép ghi đè dữ liệu cũ
     public Ban update(String id, BanDTO dto) {
         KhuVuc khuVuc = khuVucRepository.findById(dto.getMaKhuVuc())
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Khu Vực!"));
@@ -62,14 +65,37 @@ public class BanService {
         return banRepository.save(ban);
     }
 
-    public void delete(String id) { banRepository.deleteById(id); }
+    public void delete(String id) {
+        Ban ban = banRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Khong tim thay ban voi ma: " + id));
+
+        ban.setTrangThaiBan(MAINTENANCE_STATUS);
+        banRepository.save(ban);
+    }
 
     public void updateTrangThaiBan(String maBan, String status) {
-        // Kiểm tra xem bàn có tồn tại không trước khi update
-        Ban ban = banRepository.findById(maBan)
+        banRepository.findById(maBan)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy bàn: " + maBan));
 
         banRepository.updateTrangThaiThanhToan(maBan, status);
     }
 
+    private String generateMaBan(String maKhuVuc) {
+        Optional<Ban> lastBan = banRepository.findTopByMaBanStartingWithOrderByMaBanDesc(maKhuVuc);
+        int nextNumber = lastBan
+                .map(Ban::getMaBan)
+                .map(maBan -> maBan.substring(maKhuVuc.length()))
+                .map(this::parseSequence)
+                .orElse(0) + 1;
+
+        return maKhuVuc + String.format("%03d", nextNumber);
+    }
+
+    private int parseSequence(String sequence) {
+        try {
+            return Integer.parseInt(sequence);
+        } catch (NumberFormatException ex) {
+            throw new RuntimeException("Mã bàn hiện tại không đúng định dạng số thứ tự");
+        }
+    }
 }
