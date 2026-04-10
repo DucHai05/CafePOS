@@ -44,8 +44,7 @@ const TableMapPage = () => {
     <div className="table-map-wrapper">
       <header className="map-header">
         <div className="header-info">
-          <h1>So do ban</h1>
-          <p>Trang thai phuc vu thoi gian thuc</p>
+          <h1>Sơ đồ khu vực/ bàn</h1>
         </div>
         <div className="map-legend">
           <div className="legend-item">

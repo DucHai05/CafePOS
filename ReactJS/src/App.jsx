@@ -15,6 +15,10 @@ import LoginPage from './pages/Auth/LoginPage';
 import Register from './pages/Auth/RegisterPage';
 import ForgotPassword from './pages/Auth/ForgotPasswordPage';
 import EmployeeManagement from './pages/Auth/EmployeeManagementPage';
+import ProfilePage from './pages/Auth/ProfilePage';
+import ChamCongPage from './pages/Auth/ChamCongPage';
+import SalaryPage from './pages/SalaryPage/SalaryPage';
+
 
 const sectionStyle = {
   background: '#f9f9f9',
@@ -86,7 +90,10 @@ function App() {
           <Route path="/staff/order/:maBan" element={<OrderPage />} />
           <Route path="/table-map" element={<TableManager />} />
           <Route path="/payment/:maBan" element={<PaymentPage />} />
-          <Route path="/employee-management" element={<EmployeeManagement />} />
+          <Route path="/nhan-su" element={<EmployeeManagement />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/salary" element={<SalaryPage />} />
+          <Route path="/cham-cong" element={<ChamCongPage />} />
         </Route>
       </Routes>
     </Router>

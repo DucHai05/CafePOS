@@ -39,7 +39,7 @@ public class DoanhThuController {
     @PutMapping("/update-after-payment/{maCa}")
     public ResponseEntity<?> updateRevenue(
             @PathVariable String maCa,
-            @RequestBody UpdateDoanhThuDTO dto // Dùng cái DTO Hải vừa tạo ở đây
+            @RequestBody UpdateDoanhThuDTO dto
     ) {
         // Truyền dữ liệu từ DTO vào Service
         DoanhThu updated = service.updateRevenueAfterPayment(

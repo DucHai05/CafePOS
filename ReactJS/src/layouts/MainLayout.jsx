@@ -47,6 +47,9 @@ const MainLayout = () => {
           <NavLink to="/sell" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
             <TableProperties size={20} /> <span>Bán hàng</span>
           </NavLink>
+          <NavLink to="/cham-cong" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+            <TableProperties size={20} /> <span>Chấm công</span>
+          </NavLink>
         </nav>
 
         <nav className="nav-group">
@@ -66,19 +69,20 @@ const MainLayout = () => {
           <NavLink to="/nhan-su" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
             <History size={20} /> <span>Nhân sự</span>
           </NavLink>
-          <NavLink to="/settings" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
-            <Settings size={20} /> <span>Cấu hình</span>
+          <NavLink to="/salary" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+            <Settings size={20} /> <span>Lương/ Thưởng</span>
           </NavLink>
         </nav>
 
         <div className="sidebar-footer">
-          <div className="user-profile">
+          <div className="user-profile" onClick={() => navigate('/profile')} >
             <UserCircle size={32} color="#4f46e5" strokeWidth={1.5} />
             <div className="user-meta">
-              <p className="user-name" onClick={() => navigate('/profile')} >Bùi Đức Hải</p>
+              <p className="user-name">Bùi Đức Hải</p>
               <p className="user-role">Quản lý hệ thống</p>
             </div>
           </div>
+          
           <button className="logout-btn" onClick={() => navigate('/login')}>
             <LogOut size={18} /> <span>Kết thúc ca</span>
           </button>

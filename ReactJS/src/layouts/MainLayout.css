@@ -114,18 +114,65 @@
   padding-top: 20px; 
 }
 
-.user-profile { 
-  display: flex; 
-  align-items: center;
-  gap: 12px; 
-  margin-bottom: 16px;
-  padding: 12px;
-  background: #f8fafc;
-  border-radius: 12px;
+/* Container tổng - bọc cả Icon và Text */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent; /* Tránh giật khung khi hover */
 }
 
-.user-name { color: #0f172a; font-size: 0.9rem; font-weight: 600; }
-.user-role { font-size: 0.75rem; color: #64748b; }
+/* Hiệu ứng di chuột vào cả vùng */
+.user-profile:hover {
+    background-color: #f1f5f9; /* slate-100 */
+    border-color: #e2e8f0; /* slate-200 */
+}
+
+/* Hiệu ứng khi nhấn (Click) - Quan trọng để tạo cảm giác thực tế */
+.user-profile:active {
+    background-color: #e2e8f0; /* slate-200 */
+    transform: scale(0.97); /* Hiệu ứng nhấn lún nhẹ */
+    transition: all 0.1s;
+}
+
+/* Metadata bên trong */
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a; /* slate-900 */
+    line-height: 1.2;
+}
+
+.user-role {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b; /* slate-500 */
+    margin-top: 2px;
+}
+
+/* Tùy chỉnh thêm cho Icon nếu cần */
+.user-profile svg {
+    flex-shrink: 0; /* Đảm bảo icon không bị bóp méo khi text quá dài */
+    transition: transform 0.2s ease;
+}
+
+.user-profile:hover svg {
+    transform: rotate(5deg) scale(1.1); /* Nhích nhẹ icon cho sinh động */
+}
 
 .logout-btn {
   width: 100%;

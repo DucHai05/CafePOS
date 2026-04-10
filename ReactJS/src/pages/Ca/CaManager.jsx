@@ -153,7 +153,6 @@ const CaManager = () => {
                     {activeCa ? 'Ca đang hoạt động' : 'Chưa mở ca'}
                 </div>
             </header>
-
             {/* THẺ CA HIỆN TẠI */}
             <div className="active-ca-card">
                 <div className="card-top">
