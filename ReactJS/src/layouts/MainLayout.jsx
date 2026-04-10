@@ -47,6 +47,9 @@ const MainLayout = () => {
           <NavLink to="/ca" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
             <History size={20} /> <span>Ca làm việc</span>
           </NavLink>
+          <NavLink to="/nhan-su" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
+            <History size={20} /> <span>Nhân sự</span>
+          </NavLink>
           <NavLink to="/settings" className={({isActive}) => isActive ? 'nav-item active' : 'nav-item'}>
             <Settings size={20} /> <span>Cấu hình</span>
           </NavLink>
@@ -56,7 +59,7 @@ const MainLayout = () => {
           <div className="user-profile">
             <UserCircle size={32} color="#4f46e5" strokeWidth={1.5} />
             <div className="user-meta">
-              <p className="user-name">Bùi Đức Hải</p>
+              <p className="user-name" onClick={() => navigate('/profile')} >Bùi Đức Hải</p>
               <p className="user-role">Quản lý hệ thống</p>
             </div>
           </div>

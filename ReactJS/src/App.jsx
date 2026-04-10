@@ -14,6 +14,8 @@ import LoginPage from './pages/Auth/LoginPage';
 import Register from './pages/Auth/RegisterPage';
 import ForgotPassword from './pages/Auth/ForgotPasswordPage';
 import EmployeeManagement from './pages/Auth/EmployeeManagementPage';
+import Profile from './pages/Auth/ProfilePage';
+
 // import ChamCong from './pages/Auth/ChamCongPage';
 // import LuongThuong from './pages/Auth/LuongThuongPage';
 // import Profile from './pages/Auth/ProfilePage';
@@ -68,7 +70,8 @@ function App() {
           <Route path="/order/:maBan" element={<OrderPage />} />
           <Route path="/table-map" element={<TableManager />} />
           <Route path="/payment/:maBan" element={<PaymentPage />} />
-          <Route path="/employee-management" element={<EmployeeManagement />} />
+          <Route path="/nhan-su" element={<EmployeeManagement />} />
+          <Route path="/profile" element={<Profile />} />
           {/* <Route path="/cham-cong" element={<ChamCong />} />
           <Route path="/tinh-luong" element={<LuongThuong />} />
           <Route path="/profile" element={<Profile />} /> */}
