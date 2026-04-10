@@ -74,7 +74,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/customer-order" element={<CustomerOrderPage />} />
+        <Route path="/customer-order" element={<Navigate to="/order/BAN101" replace />} />
+        <Route path="/order/:maBan" element={<CustomerOrderPage />} />
 
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
