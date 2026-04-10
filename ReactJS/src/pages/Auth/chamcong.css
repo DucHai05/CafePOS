@@ -1,0 +1,213 @@
+/* ===== CONTAINER ===== */
+.cc-container {
+    display: flex;
+    gap: 24px;
+    padding: 30px;
+    background: linear-gradient(135deg, #eef2ff, #f8fafc);
+    min-height: 100vh;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    justify-content: center;
+}
+
+/* ===== CARD ===== */
+.cc-card {
+    background: rgba(255,255,255,0.9);
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    backdrop-filter: blur(6px);
+    transition: 0.25s;
+}
+
+.cc-card:hover {
+    transform: translateY(-3px);
+}
+
+/* ===== LAYOUT ===== */
+.cc-left { flex: 1.5; max-width: 520px; }
+.cc-right {
+    flex: 1;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== HEADER ===== */
+.cc-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.cc-title {
+    font-size: 1.25rem;
+    margin: 0;
+    font-weight: 700;
+    color: #111827;
+}
+
+.cc-badge {
+    background: #e0e7ff;
+    color: #4f46e5;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+/* ===== CALENDAR ===== */
+.cc-calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+}
+
+.cc-dow {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.cc-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+    background: #f9fafb;
+    transition: 0.2s;
+}
+
+.cc-day:hover {
+    background: #eef2ff;
+}
+
+/* trạng thái */
+.cc-day.is-active {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: white;
+    box-shadow: 0 4px 12px rgba(34,197,94,0.4);
+}
+
+.cc-day.is-selected {
+    border: 2px solid #6366f1;
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.cc-day.is-active.is-selected {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+}
+
+/* dot */
+.cc-dot {
+    position: absolute;
+    bottom: 5px;
+    width: 5px;
+    height: 5px;
+    background: currentColor;
+    border-radius: 50%;
+}
+
+/* ===== DETAIL ===== */
+.cc-detail {
+    margin-top: 20px;
+}
+
+.cc-detail-box {
+    background: #f9fafb;
+    padding: 12px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.cc-hint {
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+/* ===== USER ===== */
+.cc-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 25px;
+}
+
+.cc-avatar {
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+}
+
+.cc-user h4 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.cc-user p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* ===== CLOCK ===== */
+.cc-clock {
+    font-size: 3.2rem;
+    font-weight: bold;
+    font-family: monospace;
+    color: #111827;
+    margin-bottom: 10px;
+}
+
+/* ===== STATUS ===== */
+.cc-status {
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 30px;
+    color: #ef4444;
+}
+
+.cc-status.working {
+    color: #16a34a;
+}
+
+/* ===== BUTTON ===== */
+.cc-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    color: white;
+    transition: 0.25s;
+}
+
+/* start */
+.btn-start {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+/* stop */
+.btn-stop {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.cc-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}

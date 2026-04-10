@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { CreditCard, Wallet, ArrowLeft, Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { orderApi } from '../../api/orderAPI';
 import { doanhthuApi } from '../../api/doanhthuAPI';
 import { tableApi } from '../../api/tableAPI';
@@ -12,7 +12,6 @@ const PaymentPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // 1. Khai báo dữ liệu từ state (OrderPage truyền sang)
     const {
         maHoaDon: maHDTuState,
         cart: cartTuState,

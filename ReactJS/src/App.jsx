@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // 1. PHẢI thêm useState ở đây
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import OrderPage from './pages/OrderPage/orderPage';
@@ -10,18 +10,21 @@ import KhuVucManager from './pages/KhuVuc/KhuVucManager';
 import BanPage from './pages/Ban/BanManager';
 import PaymentPage from './pages/PaymentPage/PaymentPage';
 import Dashboard from './pages/DashboardPage/DashboardPage';
+import LoginPage from './pages/Auth/LoginPage';
+import Register from './pages/Auth/RegisterPage';
+import ForgotPassword from './pages/Auth/ForgotPasswordPage';
+import EmployeeManagement from './pages/Auth/EmployeeManagementPage';
+// import ChamCong from './pages/Auth/ChamCongPage';
+// import LuongThuong from './pages/Auth/LuongThuongPage';
+// import Profile from './pages/Auth/ProfilePage';
 
-
-// 2. Định nghĩa lại TableManager với Logic State
 const TableManager = () => {
-  // Tạo state để giữ khu vực đang chọn
   const [selectedKhuVuc, setSelectedKhuVuc] = useState(null);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '30px', padding: '20px' }}>
       <section style={sectionStyle}>
         <h3 style={titleStyle}>📂 Quản lý Khu Vực</h3>
-        {/* Truyền hàm setSelectedKhuVuc vào prop onSelectKhuVuc */}
         <KhuVucManager onSelectKhuVuc={setSelectedKhuVuc} />
       </section>
       
@@ -31,7 +34,6 @@ const TableManager = () => {
           {selectedKhuVuc && <span style={{color: '#1890ff'}}> - {selectedKhuVuc.tenKhuVuc}</span>}
         </h3>
         
-        {/* Logic hiển thị: Có chọn mới hiện BanPage, chưa chọn hiện thông báo */}
         {selectedKhuVuc ? (
           <BanPage khuVuc={selectedKhuVuc} />
         ) : (
@@ -44,13 +46,19 @@ const TableManager = () => {
   );
 };
 
-
-
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
+        {/* 1. Mặc định vào trang web sẽ tự động chuyển hướng sang /login */}
+        <Route path="/" element={<Navigate to="/login" />} />
+        
+        {/* 2. Trang Login nằm ĐỘC LẬP, không bị bọc bởi MainLayout */}
+        <Route path="/login" element={<LoginPage />} />
+          <Route path="/forgot" element={<ForgotPassword />} />
+          <Route path="/register" element={<Register />} />
+
+        {/* 3. MainLayout chỉ bọc các trang sau khi đã đăng nhập */}
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/sell" element={<TableMapPage />} />
@@ -60,13 +68,16 @@ function App() {
           <Route path="/order/:maBan" element={<OrderPage />} />
           <Route path="/table-map" element={<TableManager />} />
           <Route path="/payment/:maBan" element={<PaymentPage />} />
+          <Route path="/employee-management" element={<EmployeeManagement />} />
+          {/* <Route path="/cham-cong" element={<ChamCong />} />
+          <Route path="/tinh-luong" element={<LuongThuong />} />
+          <Route path="/profile" element={<Profile />} /> */}
         </Route>
       </Routes>
     </Router>
   );
 }
 
-// Styles (Giữ nguyên của bạn)
 const statsGrid = { display: 'flex', gap: '20px', marginTop: '20px' };
 const statCard = { padding: '20px', background: '#fff', borderRadius: '10px', boxShadow: '0 2px 5px rgba(0,0,0,0.1)', flex: 1 };
 const sectionStyle = { background: '#f9f9f9', padding: '20px', borderRadius: '12px', border: '1px solid #eee' };
