@@ -205,4 +205,105 @@
 .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
 .icon-btn:hover { color: var(--primary); }
 .time-display { font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums; }
+
+/* --- NOTIFICATION DROPDOWN (Phần thiếu quan trọng) --- */
+.notification-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Hiệu ứng rung chuông khi có thông báo mới (optional) */
+.icon-btn .lucide-bell {
+  transition: transform 0.2s;
+}
+
+.icon-btn:hover .lucide-bell {
+  transform: rotate(15deg);
+  color: var(--primary);
+}
+
+/* Dropdown Container */
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 380px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--sidebar-border);
+  overflow: hidden;
+  z-index: 1000;
+  animation: dropdownFade 0.2s ease-out;
+}
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header của Dropdown */
+.notification-dropdown .bg-light {
+  background-color: var(--slate-50) !important;
+  padding: 16px 20px;
+}
+
+.notification-dropdown h6 {
+  color: var(--slate-900);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Danh sách thông báo */
+.notification-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Custom thanh cuộn cho mượt */
+.notification-list::-webkit-scrollbar { width: 6px; }
+.notification-list::-webkit-scrollbar-thumb { background: var(--slate-200); border-radius: 10px; }
+
+/* Từng dòng thông báo */
+.notification-list > div {
+  transition: background 0.2s;
+  border-bottom: 1px solid var(--slate-50);
+}
+
+/* Trạng thái chưa đọc (Nền xanh nhạt Indigo) */
+.bg-primary.bg-opacity-10 {
+  background-color: var(--primary-light) !important;
+}
+
+/* Text tiêu đề */
+.notification-list strong {
+  display: block;
+  line-height: 1.4;
+  margin-bottom: 2px;
+}
+
+.text-primary { color: var(--primary) !important; }
+
+/* Nội dung tóm tắt (Webkit Line Clamp để cắt chữ thừa) */
+.notification-list .text-muted {
+  line-height: 1.5;
+  color: var(--text-muted) !important;
+}
+
+/* Badge số đỏ trên chuông */
+.badge.bg-danger {
+  background-color: #ef4444 !important;
+  border: 2px solid white;
+  padding: 0.35em 0.5em;
+  font-weight: 800;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+/* Nút "Đã đọc" - chấm tròn */
+.notification-list span[title] {
+  cursor: help;
+  display: inline-block;
+  transform: translateY(-1px);
+}
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

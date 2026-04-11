@@ -2,10 +2,15 @@ import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8081/api/orders';
 const PAYMENT_URL = 'http://localhost:8081/api/payments';
+const Product_URL = 'http://localhost:8087/api/v1/san-pham';
+const LoaiSP_URL = 'http://localhost:8087/api/v1/loai-san-pham';
+const User_URL = 'http://localhost:8086/api/nhan-vien';
 
 export const orderApi = {
     // Lấy danh sách sản phẩm
-    getProducts: () => axios.get(`${BASE_URL}/getProducts`),
+    getProducts: () => axios.get(`${Product_URL}`),
+    // Lấy danh sách loại sản phẩm
+    getLoaiSP: () => axios.get(`${LoaiSP_URL}`),
 
     // Lấy thông tin hóa đơn hiện tại của bàn
     loadBan: (maBan) => axios.get(`${BASE_URL}/loadBan/${maBan}`),
@@ -21,4 +26,6 @@ export const orderApi = {
     
     // API lấy hóa đơn hiện tại của bàn
     removeOrderItem: (maChiTietHD) => axios.delete(`${BASE_URL}/remove-item/${maChiTietHD}`)
+
+    
 };

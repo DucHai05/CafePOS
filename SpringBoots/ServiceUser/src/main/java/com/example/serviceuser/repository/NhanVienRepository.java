@@ -19,4 +19,11 @@ public interface NhanVienRepository extends JpaRepository<NhanVien, String> {
     @Query("SELECT nv FROM NhanVien nv JOIN nv.taiKhoan tk WHERE tk.tenDangNhap = :username")
     Optional<NhanVien> findByUsernameFromAccount(@Param("username") String username);
 
+    // 1. Lấy tên theo Mã nhân viên (Trả về String cho nhẹ)
+    @Query("SELECT n.tenNhanVien FROM NhanVien n WHERE n.maNhanVien = :maNV")
+    Optional<String> findTenByMa(@Param("maNV") String maNV);
+
+    // 2. Lấy tên theo Username của tài khoản (Dùng cho thanh Sidebar/Profile)
+    @Query("SELECT nv.tenNhanVien FROM NhanVien nv JOIN nv.taiKhoan tk WHERE tk.tenDangNhap = :username")
+    Optional<String> findTenByUsername(@Param("username") String username);
 }

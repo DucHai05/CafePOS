@@ -40,7 +40,7 @@ const OrderPage = () => {
     const [autoDiscount, setAutoDiscount] = useState(null);
     const [manualDiscount, setManualDiscount] = useState(null);
     const [originalCart, setOriginalCart] = useState([]);
-
+    const [categories, setCategories] = useState([{ id: 'ALL', name: 'Tất cả' }]);
     const validatePromoValid = (promo, currentSubTotal, currentCart) => {
     if (!promo || !promo.configs || promo.configs.length === 0) return false;
     
@@ -81,19 +81,31 @@ const OrderPage = () => {
         CartHelpers.calculateFinalTotal(subTotal, autoDiscountVal, manualDiscountVal), 
         [subTotal, autoDiscountVal, manualDiscountVal]);
 
-    useEffect(() => {
+   useEffect(() => {
         const initData = async () => {
             setLoading(true);
             try {
-                const [prodRes, caRes, promoRes] = await Promise.all([
+                // 2. Thêm orderApi.getLoaiSP() vào hàng đợi Promise
+                const [prodRes, caRes, promoRes, cateRes] = await Promise.all([
                     orderApi.getProducts(),
                     doanhthuApi.getMaCaDangMo(),
-                    promoApi.getActivePromos()
+                    promoApi.getActivePromos(),
+                    orderApi.getLoaiSP() // Giả sử hàm này Hải đã viết trong orderAPI.js
                 ]);
                 
                 setProducts(prodRes.data);
                 setMaCaOpen(caRes.data.maCa || caRes.data);
                 setAllPromos(promoRes.data);
+
+                // 3. Map dữ liệu loại sản phẩm từ DB sang định dạng của CategoryTab
+                // Hải kiểm tra lại tên trường (maLoaiSanPham, tenLoaiSanPham) cho khớp với Backend nhé
+                const serverCategories = cateRes.data.map(c => ({
+                    id: c.maLoaiSanPham, 
+                    name: c.tenLoaiSanPham
+                }));
+                
+                // Luôn giữ "Tất cả" ở đầu danh sách
+                setCategories([{ id: 'ALL', name: 'Tất cả' }, ...serverCategories]);
                 
                 const auto = promoRes.data.find(p => p.configs?.some(c => c.loaiDoiTuong === 'ALL'));
                 if (auto) setAutoDiscount(auto);
@@ -111,20 +123,26 @@ const OrderPage = () => {
                 }
             } catch (err) {
                 console.error("Lỗi khởi tạo:", err);
+                alert("Không thể tải dữ liệu thực đơn!");
             } finally {
                 setLoading(false);
             }
         };
         if (maBan) initData();
     }, [maBan]);
-    const filteredProducts = React.useMemo(() => {
-            return products
-                .filter(p => activeCategory === 'ALL' || p.loai === activeCategory)
-                .filter(p => 
-                    p.tenSanPham.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                    p.maSanPham.toLowerCase().includes(searchTerm.toLowerCase())
-                );
-        }, [products, activeCategory, searchTerm]);
+   const filteredProducts = React.useMemo(() => {
+    return products
+        .filter(p => {
+            if (activeCategory === 'ALL') return true;
+            
+
+            return (p.maLoaiSanPham === activeCategory) || (p.loaiSanPham?.maLoaiSanPham === activeCategory);
+        })
+        .filter(p => 
+            p.tenSanPham.toLowerCase().includes(searchTerm.toLowerCase()) || 
+            p.maSanPham.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+}, [products, activeCategory, searchTerm]);
 
     const handleConfirmOrder = async (isGoingToPayment = false) => {
             if (cart.length === 0) return null;
@@ -134,7 +152,7 @@ const OrderPage = () => {
                     items: cart.map(i => ({ 
                         maSanPham: i.maSanPham, 
                         soLuong: i.soLuong, 
-                        giaBan: i.giaBan, 
+                        giaBan: i.donGia, 
                         ghiChu: i.ghiChu || "" 
                     })),
                     tongTien: totalAmount
@@ -193,9 +211,7 @@ const OrderPage = () => {
                     handleConfirmOrder(false);
                 }
         };
-
-
-        const handleGoToPayment = () => {
+    const handleGoToPayment = () => {
             
             console.log("🚀 Chuyển sang thanh toán (Giỏ hàng tạm thời)");
             
@@ -217,9 +233,7 @@ const OrderPage = () => {
         else setCart([...cart, { ...p, soLuong: 1 }]);
     };
 
-    const categories = [
-        { id: 'ALL', name: 'Tất cả' }, { id: 'CAFE', name: 'Cà phê' }, { id: 'TEA', name: 'Trà sữa' }, { id: 'FOOD', name: 'Đồ ăn' }
-    ];
+
 
     if (loading) return <div className="order-loading">Đang chuẩn bị thực đơn...</div>;
     
@@ -243,7 +257,7 @@ const OrderPage = () => {
                 </header>
 
                 <CategoryTab 
-                    categories={categories} 
+                    categories={categories} // Bây giờ nó sẽ dùng data từ Server
                     activeId={activeCategory} 
                     onSelect={setActiveCategory} 
                 />
@@ -254,7 +268,7 @@ const OrderPage = () => {
                                 <PhanLoaiCard 
                                     key={p.maSanPham}
                                     title={p.tenSanPham}
-                                    subtitle={`${p.giaBan.toLocaleString()}đ`}
+                                    subtitle={p.giaTien?.toLocaleString('vi-VN')} đ
                                     image={p.duongDanHinh}
                                     onClick={() => addToCart(p)}
                                     type="product"

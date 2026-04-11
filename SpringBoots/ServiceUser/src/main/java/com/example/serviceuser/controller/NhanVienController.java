@@ -61,4 +61,22 @@ public class NhanVienController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    // 1. Lấy tên nhân viên theo mã (Dùng để hiển thị tên trong các danh sách/hóa đơn)
+    @GetMapping("/{id}/ten")
+    public ResponseEntity<String> getTenByMa(@PathVariable String id) {
+        return nhanVienRepository.findTenByMa(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // 2. Lấy tên của chính nhân viên đang đăng nhập (Dùng cho thanh Sidebar/Header)
+    @GetMapping("/me/ten")
+    public ResponseEntity<String> getMyName(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return nhanVienRepository.findTenByUsername(authentication.getName())
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

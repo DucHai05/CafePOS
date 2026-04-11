@@ -18,6 +18,9 @@ import EmployeeManagement from './pages/Auth/EmployeeManagementPage';
 import ProfilePage from './pages/Auth/ProfilePage';
 import ChamCongPage from './pages/Auth/ChamCongPage';
 import SalaryPage from './pages/SalaryPage/SalaryPage';
+import SanPhamPage from './pages/SanPham/SanPhamList';  
+import LoaiSPPage from './pages/LoaiSanPham/LoaiSanPhamList';  
+
 
 
 const sectionStyle = {
@@ -94,6 +97,8 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/salary" element={<SalaryPage />} />
           <Route path="/cham-cong" element={<ChamCongPage />} />
+          <Route path="/product" element={<SanPhamPage />} />
+          <Route path="/loai-sp" element={<LoaiSPPage />} />
         </Route>
       </Routes>
     </Router>

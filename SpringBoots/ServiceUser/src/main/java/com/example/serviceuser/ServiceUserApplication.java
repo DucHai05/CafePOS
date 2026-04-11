@@ -15,5 +15,7 @@ public class ServiceUserApplication {
         System.out.println("=================================================");
         System.out.println("MA BAM CHUAN CUA 123456 LA: " + encoded);
         System.out.println("=================================================");
+
+
     }
 }

@@ -83,4 +83,13 @@ public class NhanVienService {
     public Optional<NhanVien> getNhanVienByUsername(String username) {
         return nhanVienRepository.findByUsernameFromAccount(username);
     }
+    public String getTenNhanVien(String maNV) {
+        return nhanVienRepository.findTenByMa(maNV)
+                .orElse("Nhân viên không tồn tại");
+    }
+
+    public String getTenHienTai(String username) {
+        return nhanVienRepository.findTenByUsername(username)
+                .orElse("Khách");
+    }
 }
